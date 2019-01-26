@@ -29,15 +29,26 @@
         private void InitializeComponent()
         {
             this.mainMenu = new System.Windows.Forms.MenuStrip();
+            this.openPdfMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mainMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainMenu
             // 
+            this.mainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openPdfMenuItem});
             this.mainMenu.Location = new System.Drawing.Point(0, 0);
             this.mainMenu.Name = "mainMenu";
             this.mainMenu.Size = new System.Drawing.Size(800, 24);
             this.mainMenu.TabIndex = 0;
             this.mainMenu.Text = "menuStrip1";
+            // 
+            // openPdfMenuItem
+            // 
+            this.openPdfMenuItem.Name = "openPdfMenuItem";
+            this.openPdfMenuItem.Size = new System.Drawing.Size(87, 20);
+            this.openPdfMenuItem.Text = "PDF öffnen...";
+            this.openPdfMenuItem.Click += new System.EventHandler(this.openPdfMenuItem_Click);
             // 
             // MainForm
             // 
@@ -47,7 +58,10 @@
             this.Controls.Add(this.mainMenu);
             this.MainMenuStrip = this.mainMenu;
             this.Name = "MainForm";
-            this.Text = "Form1";
+            this.ShowIcon = false;
+            this.Text = "PdfAnnotator - Georg Jung";
+            this.mainMenu.ResumeLayout(false);
+            this.mainMenu.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -56,6 +70,7 @@
         #endregion
 
         private System.Windows.Forms.MenuStrip mainMenu;
+        private System.Windows.Forms.ToolStripMenuItem openPdfMenuItem;
     }
 }
 
