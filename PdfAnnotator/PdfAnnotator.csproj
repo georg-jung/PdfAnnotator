@@ -46,12 +46,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Pdf\IAnalysis.cs" />
+    <Compile Include="Pdf\IAnalyzer.cs" />
+    <Compile Include="Pdf\IPage.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Pdf\IWord.cs" />
+    <Compile Include="Pdf\PdfFile.cs" />
     <Compile Include="ProcessAsyncHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
