@@ -2,7 +2,7 @@
 
 namespace PdfAnnotator.Pdf.Poppler
 {
-    internal class Page : IPage<Word>
+    internal class Page : IPage
     {
         public Page(IReadOnlyList<Word> words)
         {
@@ -10,5 +10,7 @@ namespace PdfAnnotator.Pdf.Poppler
         }
 
         public IReadOnlyList<Word> Words { get; }
+
+        IReadOnlyList<IWord> IPage.Words => Words;
     }
 }

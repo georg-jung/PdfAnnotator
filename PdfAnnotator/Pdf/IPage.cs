@@ -2,8 +2,8 @@
 
 namespace PdfAnnotator.Pdf
 {
-    internal interface IPage<out TWord> where TWord : IWord
+    internal interface IPage
     {
-        IReadOnlyList<TWord> Words { get; }
+        IReadOnlyList<IWord> Words { get; }
     }
 }

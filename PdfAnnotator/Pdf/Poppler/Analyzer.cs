@@ -8,7 +8,7 @@ using System.Xml;
 
 namespace PdfAnnotator.Pdf.Poppler
 {
-    internal class Analyzer : IAnalyzer<Analysis, Page, Word>
+    internal class Analyzer : IAnalyzer
     {
         private static readonly string PdfToTextArgs = "-bbox";
         private static readonly int PdfToTextTimeout = 10000;
@@ -20,7 +20,7 @@ namespace PdfAnnotator.Pdf.Poppler
             return System.IO.Path.Combine(dir, "poppler", "bin", "pdftotext.exe");
         }
 
-        public async Task<IAnalysis<Page, Word>> AnalyzeAsync(PdfFile document)
+        public async Task<IAnalysis> AnalyzeAsync(PdfFile document)
         {
             var p2t = GetPdfToTextExePath();
             var output = System.IO.Path.GetTempFileName();

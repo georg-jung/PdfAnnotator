@@ -2,9 +2,9 @@
 
 namespace PdfAnnotator.Pdf
 {
-    internal interface IAnalysis<out TPage, out TWord> where TPage : IPage<TWord> where TWord : IWord
+    internal interface IAnalysis
     {
         PdfFile Document { get; }
-        IReadOnlyList<TPage> Pages { get; }
+        IReadOnlyList<IPage> Pages { get; }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace PdfAnnotator.Pdf.Poppler
 {
-    internal class Analysis : IAnalysis<Page, Word>
+    internal class Analysis : IAnalysis
     {
         public Analysis(PdfFile document, IReadOnlyList<Page> pages)
         {
@@ -12,5 +12,7 @@ namespace PdfAnnotator.Pdf.Poppler
 
         public PdfFile Document { get; }
         public IReadOnlyList<Page> Pages { get; }
+
+        IReadOnlyList<IPage> IAnalysis.Pages => Pages;
     }
 }
