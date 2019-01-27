@@ -82,17 +82,17 @@ namespace PdfAnnotator
             }
             if (_annotations.ContainsKey(word))
             {
-                MessageBox.Show("There already is an annotation for this word", "Annotation exists", MessageBoxButtons.OK,
+                MessageBox.Show("There already is an annotation for this word.", "Annotation exists", MessageBoxButtons.OK,
                     MessageBoxIcon.Exclamation);
                 return;
             }
 
             var annot = new Annotation.Annotation(word);
+
+            if (EditAnnotation(annot) != DialogResult.OK) return;
             _annotations.Add(word, annot);
 
-            EditAnnotation(annot);
-
-            var lvi = new ListViewItem {Text = word.Text, Tag = annot};
+            var lvi = new ListViewItem { Text = word.Text, Tag = annot };
             lvi.SubItems.Add(annot.Content);
             annotationsListView.Items.Add(lvi);
         }
@@ -111,12 +111,12 @@ namespace PdfAnnotator
             focused.SubItems[1].Text = annot.Content;
         }
 
-        private static void EditAnnotation(Annotation.Annotation value)
+        private static DialogResult EditAnnotation(Annotation.Annotation value)
         {
             using (var editFrm = new EditAnnotationForm())
             {
                 editFrm.Value = value;
-                editFrm.ShowDialog();
+                return editFrm.ShowDialog();
             }
         }
     }
