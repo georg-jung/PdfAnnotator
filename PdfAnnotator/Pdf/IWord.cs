@@ -13,5 +13,6 @@ namespace PdfAnnotator.Pdf
         float YMin { get; }
         float XMax { get; }
         float YMax { get; }
+        IPage Parent { get; }
     }
 }

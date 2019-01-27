@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
@@ -20,38 +21,42 @@ namespace PdfAnnotator.Pdf.Poppler
             return System.IO.Path.Combine(dir, "poppler", "bin", "pdftotext.exe");
         }
 
-        public async Task<IAnalysis> AnalyzeAsync(PdfFile document)
+        public async Task<IAnalysis> AnalyzeAsync(PdfFile document, IProgress<int> pageProgress = null, CancellationToken ct = default)
         {
             var p2t = GetPdfToTextExePath();
             var output = System.IO.Path.GetTempFileName();
             var arg = $"{PdfToTextArgs} \"{document.Path}\" \"{output}\"";
             var res = await ProcessAsyncHelper.RunProcessAsync(p2t, arg, PdfToTextTimeout).ConfigureAwait(false);
             if (res.ExitCode != 0) throw new ApplicationException($"PdfToText exited with code {res.ExitCode}. StdErr: {res.Error}");
-            var pages = await ParseXmlAsync(output).ConfigureAwait(false);
+            var analysis = await ParseXmlAsync(output, document, pageProgress, ct).ConfigureAwait(false);
             System.IO.File.Delete(output);
-            return new Analysis(document, pages);
+            return analysis;
         }
 
-        private async Task<List<Page>> ParseXmlAsync(string htmlOutputPath)
+        private async Task<Analysis> ParseXmlAsync(string htmlOutputPath, PdfFile document, IProgress<int> pageProgress = null, CancellationToken ct = default)
         {
-            var settings = new XmlReaderSettings { Async = true, DtdProcessing = DtdProcessing.Ignore };
+            var settings = new XmlReaderSettings { Async = true, DtdProcessing = DtdProcessing.Ignore, CheckCharacters = false };
 
             using (var stream = new FileStream(htmlOutputPath, FileMode.Open, FileAccess.Read))
-            using (var reader = XmlReader.Create(stream, settings))
+            using (var xmlFriendlyStream = new InvalidXmlCharacterReplacingStreamReader(stream, '_'))
+            using (var reader = XmlReader.Create(xmlFriendlyStream, settings))
             {
                 var inDoc = false;
                 var inPage = false;
                 var pages = new List<Page>();
+                var analysis = new Analysis(document, pages);
                 var curWords = new List<Word>();
+                var curPage = new Page(curWords, analysis);
                 Word curWord = null;
                 while (await reader.ReadAsync().ConfigureAwait(false))
                 {
+                    ct.ThrowIfCancellationRequested();
                     if (reader.Name == "doc")
                     {
                         if (reader.NodeType == XmlNodeType.Element)
                             if (inDoc) throw new ArgumentException("Opening doc-Element but we already are in doc."); else inDoc = true;
                         if (reader.NodeType == XmlNodeType.EndElement)
-                            if (!inDoc) throw new ArgumentException("Closing doc-Element but we are not in doc."); else return pages;
+                            if (!inDoc) throw new ArgumentException("Closing doc-Element but we are not in doc."); else return analysis;
                     }
                     if (!inDoc) continue;
                     if (reader.Name == "page")
@@ -62,9 +67,11 @@ namespace PdfAnnotator.Pdf.Poppler
                             if (!inPage) throw new ArgumentException("Closing page-Element but we are not in page.");
                             else
                             {
-                                pages.Add(new Page(curWords));
+                                pages.Add(curPage);
                                 curWords = new List<Word>();
+                                curPage = new Page(curWords, analysis);
                                 inPage = false;
+                                pageProgress?.Report(pages.Count);
                             }
                     }
                     if (!inPage) continue;
@@ -79,7 +86,8 @@ namespace PdfAnnotator.Pdf.Poppler
                                     XMin = float.Parse(reader.GetAttribute("xMin") ?? throw new ArgumentException("word-Element has no xMin-attribute."), CultureInfo.InvariantCulture),
                                     YMin = float.Parse(reader.GetAttribute("yMin") ?? throw new ArgumentException("word-Element has no yMin-attribute."), CultureInfo.InvariantCulture),
                                     XMax = float.Parse(reader.GetAttribute("xMax") ?? throw new ArgumentException("word-Element has no xMax-attribute."), CultureInfo.InvariantCulture),
-                                    YMax = float.Parse(reader.GetAttribute("yMax") ?? throw new ArgumentException("word-Element has no yMax-attribute."), CultureInfo.InvariantCulture)
+                                    YMax = float.Parse(reader.GetAttribute("yMax") ?? throw new ArgumentException("word-Element has no yMax-attribute."), CultureInfo.InvariantCulture),
+                                    Parent = curPage
                                 };
                             }
                         if (reader.NodeType == XmlNodeType.EndElement)

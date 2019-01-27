@@ -7,5 +7,8 @@
         public float YMin { get; set; }
         public float XMax { get; set; }
         public float YMax { get; set; }
+        public Page Parent { get; set; }
+
+        IPage IWord.Parent => Parent;
     }
 }

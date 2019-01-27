@@ -5,5 +5,6 @@ namespace PdfAnnotator.Pdf
     internal interface IPage
     {
         IReadOnlyList<IWord> Words { get; }
+        IAnalysis Parent { get; }
     }
 }
