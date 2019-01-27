@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -129,6 +129,12 @@ namespace PdfAnnotator
 
         private async void createPdfMenuItem_Click(object sender, EventArgs e)
         {
+            if (!_unsaved || _openFile == null)
+            {
+                MessageBox.Show("You didn't add any annotation. Please start working on a document before saving.",
+                        "Nothing changed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             using (var sfd = new SaveFileDialog())
             {
                 sfd.Filter = "PDF files|*.pdf|All files|*";
