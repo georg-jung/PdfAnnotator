@@ -6,5 +6,6 @@ namespace PdfAnnotator.Pdf
     {
         IReadOnlyList<IWord> Words { get; }
         IAnalysis Parent { get; }
+        int Index { get; }
     }
 }

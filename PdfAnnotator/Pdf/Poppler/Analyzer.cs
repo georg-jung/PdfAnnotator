@@ -46,7 +46,7 @@ namespace PdfAnnotator.Pdf.Poppler
                 var pages = new List<Page>();
                 var analysis = new Analysis(document, pages);
                 var curWords = new List<Word>();
-                var curPage = new Page(curWords, analysis);
+                var curPage = new Page(curWords, analysis, 0);
                 Word curWord = null;
                 while (await reader.ReadAsync().ConfigureAwait(false))
                 {
@@ -69,7 +69,7 @@ namespace PdfAnnotator.Pdf.Poppler
                             {
                                 pages.Add(curPage);
                                 curWords = new List<Word>();
-                                curPage = new Page(curWords, analysis);
+                                curPage = new Page(curWords, analysis, pages.Count);
                                 inPage = false;
                                 pageProgress?.Report(pages.Count);
                             }
