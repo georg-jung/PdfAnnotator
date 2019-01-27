@@ -18,6 +18,7 @@ namespace PdfAnnotator
         private IReadOnlyList<IWord> _words;
         private Dictionary<IWord, IAnnotation> _annotations;
         private PdfFile _openFile;
+        private bool _unsaved = false;
 
         public MainForm()
         {
@@ -26,11 +27,12 @@ namespace PdfAnnotator
 
         private async void openPdfMenuItem_Click(object sender, EventArgs e)
         {
-            if (_openFile != null)
+            if (_unsaved && _openFile != null)
             {
                 if (MessageBox.Show("If you open a new file, unsaved changes will be lost. Do you want to continue?",
                         "Unsaved changes", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
             }
+
             using (var ofd = new OpenFileDialog())
             using (var prgForm = new ProgressForm())
             {
@@ -62,6 +64,7 @@ namespace PdfAnnotator
                     lvi.SubItems.Add(w.Appearances.Count.ToString());
                     wordsView.Items.Add(lvi);
                 }
+
                 wordsView.EndUpdate();
                 prgForm.Close();
 
@@ -80,9 +83,11 @@ namespace PdfAnnotator
                     MessageBoxIcon.Exclamation);
                 return;
             }
+
             if (_annotations.ContainsKey(word))
             {
-                MessageBox.Show("There already is an annotation for this word.", "Annotation exists", MessageBoxButtons.OK,
+                MessageBox.Show("There already is an annotation for this word.", "Annotation exists",
+                    MessageBoxButtons.OK,
                     MessageBoxIcon.Exclamation);
                 return;
             }
@@ -90,6 +95,7 @@ namespace PdfAnnotator
             var annot = new Annotation.Annotation(word);
 
             if (EditAnnotation(annot) != DialogResult.OK) return;
+            _unsaved = true;
             _annotations.Add(word, annot);
 
             var lvi = new ListViewItem { Text = word.Text, Tag = annot };
@@ -107,7 +113,8 @@ namespace PdfAnnotator
                 return;
             }
 
-            EditAnnotation(annot);
+            if (EditAnnotation(annot) != DialogResult.OK) return;
+            _unsaved = true;
             focused.SubItems[1].Text = annot.Content;
         }
 
@@ -117,6 +124,20 @@ namespace PdfAnnotator
             {
                 editFrm.Value = value;
                 return editFrm.ShowDialog();
+            }
+        }
+
+        private async void createPdfMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "PDF files|*.pdf|All files|*";
+                if (sfd.ShowDialog() != DialogResult.OK) return;
+
+                var writer = new TextSharpAnnotationWriter();
+                await writer.WriteAnnotatedPdfAsync(_openFile, _annotations.Values, sfd.FileName).ConfigureAwait(false);
+
+                _unsaved = false;
             }
         }
     }

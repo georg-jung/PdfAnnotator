@@ -30,7 +30,7 @@
         {
             this.mainMenu = new System.Windows.Forms.MenuStrip();
             this.openPdfMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pDFErstellenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createPdfMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wordsView = new System.Windows.Forms.ListView();
             this.wordHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.countHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -59,7 +59,7 @@
             // 
             this.mainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openPdfMenuItem,
-            this.pDFErstellenToolStripMenuItem});
+            this.createPdfMenuItem});
             this.mainMenu.Location = new System.Drawing.Point(0, 0);
             this.mainMenu.Name = "mainMenu";
             this.mainMenu.Size = new System.Drawing.Size(942, 24);
@@ -73,11 +73,12 @@
             this.openPdfMenuItem.Text = "Open PDF...";
             this.openPdfMenuItem.Click += new System.EventHandler(this.openPdfMenuItem_Click);
             // 
-            // pDFErstellenToolStripMenuItem
+            // createPdfMenuItem
             // 
-            this.pDFErstellenToolStripMenuItem.Name = "pDFErstellenToolStripMenuItem";
-            this.pDFErstellenToolStripMenuItem.Size = new System.Drawing.Size(86, 20);
-            this.pDFErstellenToolStripMenuItem.Text = "Create PDF...";
+            this.createPdfMenuItem.Name = "createPdfMenuItem";
+            this.createPdfMenuItem.Size = new System.Drawing.Size(86, 20);
+            this.createPdfMenuItem.Text = "Create PDF...";
+            this.createPdfMenuItem.Click += new System.EventHandler(this.createPdfMenuItem_Click);
             // 
             // wordsView
             // 
@@ -251,7 +252,7 @@
         private System.Windows.Forms.ColumnHeader countHeader;
         private System.Windows.Forms.GroupBox candidatesGroupBox;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.ToolStripMenuItem pDFErstellenToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem createPdfMenuItem;
         private System.Windows.Forms.Panel candidateControlsHeader;
         private System.Windows.Forms.Button createAnnotationButton;
         private System.Windows.Forms.GroupBox annotationsGroupBox;
