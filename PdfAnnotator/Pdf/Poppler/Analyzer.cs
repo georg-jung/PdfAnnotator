@@ -62,7 +62,13 @@ namespace PdfAnnotator.Pdf.Poppler
                     if (reader.Name == "page")
                     {
                         if (reader.NodeType == XmlNodeType.Element)
-                            if (inPage) throw new ArgumentException("Opening page-Element but we already are in page."); else inPage = true;
+                            if (inPage) throw new ArgumentException("Opening page-Element but we already are in page.");
+                            else
+                            {
+                                inPage = true;
+                                curPage.Width = float.Parse(reader.GetAttribute("width") ?? throw new ArgumentException("page-Element has no width-attribute."), CultureInfo.InvariantCulture);
+                                curPage.Height = float.Parse(reader.GetAttribute("height") ?? throw new ArgumentException("page-Element has no height-attribute."), CultureInfo.InvariantCulture);
+                            }
                         if (reader.NodeType == XmlNodeType.EndElement)
                             if (!inPage) throw new ArgumentException("Closing page-Element but we are not in page.");
                             else
