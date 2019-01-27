@@ -129,7 +129,7 @@ namespace PdfAnnotator
 
         private async void createPdfMenuItem_Click(object sender, EventArgs e)
         {
-            if (!_unsaved || _openFile == null)
+            if (_openFile == null)
             {
                 MessageBox.Show("You didn't add any annotation. Please start working on a document before saving.",
                         "Nothing changed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
