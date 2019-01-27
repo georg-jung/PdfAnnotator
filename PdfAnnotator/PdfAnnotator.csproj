@@ -48,6 +48,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Annotation\Annotation.cs" />
+    <Compile Include="Annotation\IAnnotation.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="InvalidXmlCharacterReplacingStreamReader.cs" />
     <Compile Include="Pdf\IAnalysis.cs" />
