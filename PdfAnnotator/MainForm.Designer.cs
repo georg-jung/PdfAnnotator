@@ -30,27 +30,29 @@
         {
             this.mainMenu = new System.Windows.Forms.MenuStrip();
             this.openPdfMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pDFErstellenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wordsView = new System.Windows.Forms.ListView();
             this.wordHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.countHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.candidatesGroupBox = new System.Windows.Forms.GroupBox();
+            this.candidateControlsHeader = new System.Windows.Forms.Panel();
+            this.createAnnotationButton = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.annotationsGroupBox = new System.Windows.Forms.GroupBox();
-            this.pDFErstellenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.annotationsListView = new System.Windows.Forms.ListView();
             this.annotationSubjectWordHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contentHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.annotationControlsPanel = new System.Windows.Forms.Panel();
-            this.candidateControlsHeader = new System.Windows.Forms.Panel();
-            this.createAnnotationButton = new System.Windows.Forms.Button();
+            this.editAnnotationButton = new System.Windows.Forms.Button();
             this.mainMenu.SuspendLayout();
             this.candidatesGroupBox.SuspendLayout();
+            this.candidateControlsHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.annotationsGroupBox.SuspendLayout();
-            this.candidateControlsHeader.SuspendLayout();
+            this.annotationControlsPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainMenu
@@ -71,6 +73,12 @@
             this.openPdfMenuItem.Text = "Open PDF...";
             this.openPdfMenuItem.Click += new System.EventHandler(this.openPdfMenuItem_Click);
             // 
+            // pDFErstellenToolStripMenuItem
+            // 
+            this.pDFErstellenToolStripMenuItem.Name = "pDFErstellenToolStripMenuItem";
+            this.pDFErstellenToolStripMenuItem.Size = new System.Drawing.Size(86, 20);
+            this.pDFErstellenToolStripMenuItem.Text = "Create PDF...";
+            // 
             // wordsView
             // 
             this.wordsView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -80,6 +88,7 @@
             this.wordsView.FullRowSelect = true;
             this.wordsView.GridLines = true;
             this.wordsView.Location = new System.Drawing.Point(6, 19);
+            this.wordsView.MultiSelect = false;
             this.wordsView.Name = "wordsView";
             this.wordsView.Size = new System.Drawing.Size(912, 221);
             this.wordsView.TabIndex = 1;
@@ -108,6 +117,25 @@
             this.candidatesGroupBox.TabIndex = 2;
             this.candidatesGroupBox.TabStop = false;
             this.candidatesGroupBox.Text = "Candidates";
+            // 
+            // candidateControlsHeader
+            // 
+            this.candidateControlsHeader.Controls.Add(this.createAnnotationButton);
+            this.candidateControlsHeader.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.candidateControlsHeader.Location = new System.Drawing.Point(6, 240);
+            this.candidateControlsHeader.Name = "candidateControlsHeader";
+            this.candidateControlsHeader.Size = new System.Drawing.Size(912, 37);
+            this.candidateControlsHeader.TabIndex = 4;
+            // 
+            // createAnnotationButton
+            // 
+            this.createAnnotationButton.Location = new System.Drawing.Point(9, 6);
+            this.createAnnotationButton.Name = "createAnnotationButton";
+            this.createAnnotationButton.Size = new System.Drawing.Size(75, 23);
+            this.createAnnotationButton.TabIndex = 0;
+            this.createAnnotationButton.Text = "Annotate";
+            this.createAnnotationButton.UseVisualStyleBackColor = true;
+            this.createAnnotationButton.Click += new System.EventHandler(this.createAnnotationButton_Click);
             // 
             // splitContainer1
             // 
@@ -142,12 +170,6 @@
             this.annotationsGroupBox.TabStop = false;
             this.annotationsGroupBox.Text = "Annotations";
             // 
-            // pDFErstellenToolStripMenuItem
-            // 
-            this.pDFErstellenToolStripMenuItem.Name = "pDFErstellenToolStripMenuItem";
-            this.pDFErstellenToolStripMenuItem.Size = new System.Drawing.Size(86, 20);
-            this.pDFErstellenToolStripMenuItem.Text = "Create PDF...";
-            // 
             // annotationsListView
             // 
             this.annotationsListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -157,8 +179,9 @@
             this.annotationsListView.FullRowSelect = true;
             this.annotationsListView.GridLines = true;
             this.annotationsListView.Location = new System.Drawing.Point(6, 19);
+            this.annotationsListView.MultiSelect = false;
             this.annotationsListView.Name = "annotationsListView";
-            this.annotationsListView.Size = new System.Drawing.Size(912, 199);
+            this.annotationsListView.Size = new System.Drawing.Size(912, 218);
             this.annotationsListView.TabIndex = 2;
             this.annotationsListView.UseCompatibleStateImageBehavior = false;
             this.annotationsListView.View = System.Windows.Forms.View.Details;
@@ -175,30 +198,22 @@
             // 
             // annotationControlsPanel
             // 
+            this.annotationControlsPanel.Controls.Add(this.editAnnotationButton);
             this.annotationControlsPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.annotationControlsPanel.Location = new System.Drawing.Point(6, 218);
+            this.annotationControlsPanel.Location = new System.Drawing.Point(6, 237);
             this.annotationControlsPanel.Name = "annotationControlsPanel";
-            this.annotationControlsPanel.Size = new System.Drawing.Size(912, 55);
+            this.annotationControlsPanel.Size = new System.Drawing.Size(912, 36);
             this.annotationControlsPanel.TabIndex = 3;
             // 
-            // candidateControlsHeader
+            // editAnnotationButton
             // 
-            this.candidateControlsHeader.Controls.Add(this.createAnnotationButton);
-            this.candidateControlsHeader.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.candidateControlsHeader.Location = new System.Drawing.Point(6, 240);
-            this.candidateControlsHeader.Name = "candidateControlsHeader";
-            this.candidateControlsHeader.Size = new System.Drawing.Size(912, 37);
-            this.candidateControlsHeader.TabIndex = 4;
-            // 
-            // createAnnotationButton
-            // 
-            this.createAnnotationButton.Location = new System.Drawing.Point(9, 6);
-            this.createAnnotationButton.Name = "createAnnotationButton";
-            this.createAnnotationButton.Size = new System.Drawing.Size(75, 23);
-            this.createAnnotationButton.TabIndex = 0;
-            this.createAnnotationButton.Text = "Annotate";
-            this.createAnnotationButton.UseVisualStyleBackColor = true;
-            this.createAnnotationButton.Click += new System.EventHandler(this.createAnnotationButton_Click);
+            this.editAnnotationButton.Location = new System.Drawing.Point(9, 6);
+            this.editAnnotationButton.Name = "editAnnotationButton";
+            this.editAnnotationButton.Size = new System.Drawing.Size(75, 23);
+            this.editAnnotationButton.TabIndex = 0;
+            this.editAnnotationButton.Text = "Edit";
+            this.editAnnotationButton.UseVisualStyleBackColor = true;
+            this.editAnnotationButton.Click += new System.EventHandler(this.editAnnotationButton_Click);
             // 
             // MainForm
             // 
@@ -215,12 +230,13 @@
             this.mainMenu.ResumeLayout(false);
             this.mainMenu.PerformLayout();
             this.candidatesGroupBox.ResumeLayout(false);
+            this.candidateControlsHeader.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.annotationsGroupBox.ResumeLayout(false);
-            this.candidateControlsHeader.ResumeLayout(false);
+            this.annotationControlsPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -243,6 +259,7 @@
         private System.Windows.Forms.ColumnHeader annotationSubjectWordHeader;
         private System.Windows.Forms.ColumnHeader contentHeader;
         private System.Windows.Forms.Panel annotationControlsPanel;
+        private System.Windows.Forms.Button editAnnotationButton;
     }
 }
 

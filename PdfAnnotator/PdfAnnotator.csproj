@@ -50,6 +50,12 @@
   <ItemGroup>
     <Compile Include="Annotation\Annotation.cs" />
     <Compile Include="Annotation\IAnnotation.cs" />
+    <Compile Include="EditAnnotationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditAnnotationForm.Designer.cs">
+      <DependentUpon>EditAnnotationForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Extensions.cs" />
     <Compile Include="InvalidXmlCharacterReplacingStreamReader.cs" />
     <Compile Include="Pdf\IAnalysis.cs" />
@@ -85,6 +91,9 @@
     <Compile Include="Words\LengthFilter.cs" />
     <Compile Include="Words\Word.cs" />
     <Compile Include="Words\WordExtractor.cs" />
+    <EmbeddedResource Include="EditAnnotationForm.resx">
+      <DependentUpon>EditAnnotationForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>

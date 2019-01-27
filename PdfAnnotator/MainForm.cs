@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -73,7 +73,51 @@ namespace PdfAnnotator
 
         private void createAnnotationButton_Click(object sender, EventArgs e)
         {
+            var focused = wordsView.FocusedItem;
+            if (focused?.Selected != true || !(focused.Tag is IWord word))
+            {
+                MessageBox.Show("Please select a word first.", "No word selected", MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+                return;
+            }
+            if (_annotations.ContainsKey(word))
+            {
+                MessageBox.Show("There already is an annotation for this word", "Annotation exists", MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+                return;
+            }
 
+            var annot = new Annotation.Annotation(word);
+            _annotations.Add(word, annot);
+
+            EditAnnotation(annot);
+
+            var lvi = new ListViewItem {Text = word.Text, Tag = annot};
+            lvi.SubItems.Add(annot.Content);
+            annotationsListView.Items.Add(lvi);
+        }
+
+        private void editAnnotationButton_Click(object sender, EventArgs e)
+        {
+            var focused = annotationsListView.FocusedItem;
+            if (focused?.Selected != true || !(focused.Tag is Annotation.Annotation annot))
+            {
+                MessageBox.Show("Please select an annotation first.", "No annotation selected", MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            EditAnnotation(annot);
+            focused.SubItems[1].Text = annot.Content;
+        }
+
+        private static void EditAnnotation(Annotation.Annotation value)
+        {
+            using (var editFrm = new EditAnnotationForm())
+            {
+                editFrm.Value = value;
+                editFrm.ShowDialog();
+            }
         }
     }
 }
