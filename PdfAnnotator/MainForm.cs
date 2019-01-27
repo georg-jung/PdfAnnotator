@@ -10,7 +10,6 @@ using System.Windows.Forms;
 using PdfAnnotator.Annotation;
 using PdfAnnotator.Pdf.Poppler;
 using PdfAnnotator.Words;
-using Word = PdfAnnotator.Pdf.Poppler.Word;
 
 namespace PdfAnnotator
 {
@@ -27,12 +26,17 @@ namespace PdfAnnotator
 
         private async void openPdfMenuItem_Click(object sender, EventArgs e)
         {
+            if (_openFile != null)
+            {
+                if (MessageBox.Show("If you open a new file, unsaved changes will be lost. Do you want to continue?",
+                        "Unsaved changes", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
+            }
             using (var ofd = new OpenFileDialog())
             using (var prgForm = new ProgressForm())
             {
                 ofd.Filter = "PDF files|*.pdf|All files|*";
                 if (ofd.ShowDialog() != DialogResult.OK) return;
-                var x = new Analyzer();
+
                 _openFile = new PdfFile { Path = ofd.FileName };
 
                 prgForm.Show();
@@ -42,7 +46,8 @@ namespace PdfAnnotator
                     if (pg % 25 == 0) prgForm.Report($"Page {pg} loaded.");
                 });
 
-                var analysis = await x.AnalyzeAsync(_openFile, analyzePageProgress).ConfigureAwait(true);
+                var analyzer = new Analyzer();
+                var analysis = await analyzer.AnalyzeAsync(_openFile, analyzePageProgress).ConfigureAwait(true);
 
                 prgForm.Report("Document loaded. Analysing words...");
                 var we = new WordExtractor();
@@ -62,6 +67,7 @@ namespace PdfAnnotator
 
                 _words = words;
                 _annotations = new Dictionary<IWord, IAnnotation>();
+                annotationsListView.Items.Clear();
             }
         }
 
