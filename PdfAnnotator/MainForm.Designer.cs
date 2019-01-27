@@ -67,8 +67,8 @@
             // openPdfMenuItem
             // 
             this.openPdfMenuItem.Name = "openPdfMenuItem";
-            this.openPdfMenuItem.Size = new System.Drawing.Size(87, 20);
-            this.openPdfMenuItem.Text = "PDF öffnen...";
+            this.openPdfMenuItem.Size = new System.Drawing.Size(81, 20);
+            this.openPdfMenuItem.Text = "Open PDF...";
             this.openPdfMenuItem.Click += new System.EventHandler(this.openPdfMenuItem_Click);
             // 
             // wordsView
@@ -88,12 +88,12 @@
             // 
             // wordHeader
             // 
-            this.wordHeader.Text = "Wort";
+            this.wordHeader.Text = "Word";
             this.wordHeader.Width = 300;
             // 
             // countHeader
             // 
-            this.countHeader.Text = "Vorkommen";
+            this.countHeader.Text = "#";
             this.countHeader.Width = 100;
             // 
             // candidatesGroupBox
@@ -107,7 +107,7 @@
             this.candidatesGroupBox.Size = new System.Drawing.Size(924, 283);
             this.candidatesGroupBox.TabIndex = 2;
             this.candidatesGroupBox.TabStop = false;
-            this.candidatesGroupBox.Text = "Kandidaten";
+            this.candidatesGroupBox.Text = "Candidates";
             // 
             // splitContainer1
             // 
@@ -140,13 +140,13 @@
             this.annotationsGroupBox.Size = new System.Drawing.Size(924, 279);
             this.annotationsGroupBox.TabIndex = 0;
             this.annotationsGroupBox.TabStop = false;
-            this.annotationsGroupBox.Text = "Annotationen";
+            this.annotationsGroupBox.Text = "Annotations";
             // 
             // pDFErstellenToolStripMenuItem
             // 
             this.pDFErstellenToolStripMenuItem.Name = "pDFErstellenToolStripMenuItem";
-            this.pDFErstellenToolStripMenuItem.Size = new System.Drawing.Size(96, 20);
-            this.pDFErstellenToolStripMenuItem.Text = "PDF erstellen...";
+            this.pDFErstellenToolStripMenuItem.Size = new System.Drawing.Size(86, 20);
+            this.pDFErstellenToolStripMenuItem.Text = "Create PDF...";
             // 
             // annotationsListView
             // 
@@ -165,7 +165,7 @@
             // 
             // annotationSubjectWordHeader
             // 
-            this.annotationSubjectWordHeader.Text = "Wort";
+            this.annotationSubjectWordHeader.Text = "Word";
             this.annotationSubjectWordHeader.Width = 150;
             // 
             // contentHeader
@@ -196,8 +196,9 @@
             this.createAnnotationButton.Name = "createAnnotationButton";
             this.createAnnotationButton.Size = new System.Drawing.Size(75, 23);
             this.createAnnotationButton.TabIndex = 0;
-            this.createAnnotationButton.Text = "Annotieren";
+            this.createAnnotationButton.Text = "Annotate";
             this.createAnnotationButton.UseVisualStyleBackColor = true;
+            this.createAnnotationButton.Click += new System.EventHandler(this.createAnnotationButton_Click);
             // 
             // MainForm
             // 
