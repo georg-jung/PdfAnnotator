@@ -68,9 +68,13 @@
     <Compile Include="ProcessAsyncHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Words\CommonGermanWordsFilter.cs" />
+    <Compile Include="Words\CommonEnglishWordsFilter.cs" />
     <Compile Include="Words\IWord.cs" />
     <Compile Include="Words\IWordExtractor.cs" />
     <Compile Include="Words\IWordStringFilter.cs" />
+    <Compile Include="Words\JustLettersFilter.cs" />
+    <Compile Include="Words\LengthFilter.cs" />
     <Compile Include="Words\Word.cs" />
     <Compile Include="Words\WordExtractor.cs" />
     <EmbeddedResource Include="MainForm.resx">
@@ -84,6 +88,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -141,6 +146,8 @@
     <Content Include="poppler\bin\zlib1.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\CommonEnglishWords.txt" />
+    <None Include="Resources\CommonGermanWords.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
