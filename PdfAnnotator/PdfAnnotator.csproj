@@ -66,6 +66,7 @@
     </Compile>
     <Compile Include="Extensions.cs" />
     <Compile Include="InvalidXmlCharacterReplacingStreamReader.cs" />
+    <Compile Include="Pdf\AggregatedWord.cs" />
     <Compile Include="Pdf\IAnalysis.cs" />
     <Compile Include="Pdf\IAnalyzer.cs" />
     <Compile Include="Pdf\IPage.cs" />
@@ -93,10 +94,12 @@
     <Compile Include="Words\CommonGermanWordsFilter.cs" />
     <Compile Include="Words\CommonEnglishWordsFilter.cs" />
     <Compile Include="Words\IWord.cs" />
+    <Compile Include="Words\IWordAggregator.cs" />
     <Compile Include="Words\IWordExtractor.cs" />
     <Compile Include="Words\IWordStringFilter.cs" />
     <Compile Include="Words\JustLettersFilter.cs" />
     <Compile Include="Words\LengthFilter.cs" />
+    <Compile Include="Words\ParagraphAggregator.cs" />
     <Compile Include="Words\Word.cs" />
     <Compile Include="Words\WordExtractor.cs" />
     <EmbeddedResource Include="EditAnnotationForm.resx">

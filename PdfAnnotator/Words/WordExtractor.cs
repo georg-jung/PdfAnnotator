@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using PdfAnnotator.Pdf;
 
@@ -14,12 +15,18 @@ namespace PdfAnnotator.Words
         private readonly CommonGermanWordsFilter _cgwf = new CommonGermanWordsFilter();
         private readonly LengthFilter _lf = new LengthFilter();
 
+        public WordExtractor()
+        {
+            var wl = new List<Regex> {ParagraphAggregator.ValidParagraphExpression};
+            _jlf.Whitelist = wl;
+        }
+
         public Task<IReadOnlyList<IWord>> ExtractAsync(IAnalysis analysis)
         {
             var words = new Dictionary<string, Word>();
             foreach (var pg in analysis.Pages)
             {
-                foreach (var w in pg.Words)
+                foreach (var w in ApplyAggregators(pg.Words))
                 {
                     var wordString = w.Text.Normalize();
                     wordString = FilterWordString(wordString);
@@ -31,6 +38,12 @@ namespace PdfAnnotator.Words
 
             IReadOnlyList<IWord> ret = words.Values.ToList();
             return Task.FromResult(ret);
+        }
+
+        private static IEnumerable<Pdf.IWord> ApplyAggregators(IEnumerable<Pdf.IWord> words)
+        {
+            var withParagraphs = ParagraphAggregator.Instance.Aggregate(words);
+            return withParagraphs;
         }
 
         private string FilterWordString(string word)
