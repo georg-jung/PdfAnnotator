@@ -55,6 +55,7 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Fortschritt";
+            this.Shown += new System.EventHandler(this.ProgressForm_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
 

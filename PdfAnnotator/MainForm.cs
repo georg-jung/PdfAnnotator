@@ -25,7 +25,7 @@ namespace PdfAnnotator
             InitializeComponent();
         }
 
-        private async void openPdfMenuItem_Click(object sender, EventArgs e)
+        private void openPdfMenuItem_Click(object sender, EventArgs e)
         {
             if (_unsaved && _openFile != null)
             {
@@ -41,19 +41,22 @@ namespace PdfAnnotator
 
                 _openFile = new PdfFile { Path = ofd.FileName };
 
-                prgForm.Show();
-                prgForm.Report("Extracting words...");
-                var analyzePageProgress = new Progress<int>(pg =>
+                IReadOnlyList<IWord> words = null;
+                prgForm.ShowWhile(async () =>
                 {
-                    if (pg % 25 == 0) prgForm.Report($"Page {pg} loaded.");
-                });
+                    prgForm.Report("Extracting words...");
+                    var analyzePageProgress = new Progress<int>(pg =>
+                    {
+                        if (pg % 25 == 0) prgForm.Report($"Page {pg} loaded.");
+                    });
 
-                var analyzer = new Analyzer();
-                var analysis = await analyzer.AnalyzeAsync(_openFile, analyzePageProgress).ConfigureAwait(true);
+                    var analyzer = new Analyzer();
+                    var analysis = await analyzer.AnalyzeAsync(_openFile, analyzePageProgress).ConfigureAwait(true);
 
-                prgForm.Report("Document loaded. Analysing words...");
-                var we = new WordExtractor();
-                var words = await we.ExtractAsync(analysis).ConfigureAwait(true);
+                    prgForm.Report("Document loaded. Analysing words...");
+                    var we = new WordExtractor();
+                    words = await we.ExtractAsync(analysis).ConfigureAwait(true);
+                }, this);
                 var ordered = words.OrderByDescending(w => w.Appearances.Count);
 
                 wordsView.BeginUpdate();
