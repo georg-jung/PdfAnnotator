@@ -16,7 +16,7 @@ namespace PdfAnnotator
     public partial class MainForm : Form
     {
         private IReadOnlyList<IWord> _words;
-        private Dictionary<IWord, IAnnotation> _annotations;
+        private Dictionary<IWord, Annotation.Annotation> _annotations;
         private PdfFile _openFile;
         private bool _unsaved = false;
 
@@ -67,35 +67,55 @@ namespace PdfAnnotator
                     lvi.SubItems.Add(w.Appearances.Count.ToString());
                     wordsView.Items.Add(lvi);
                 }
-
                 wordsView.EndUpdate();
+
                 prgForm.Close();
 
                 _words = words;
-                _annotations = new Dictionary<IWord, IAnnotation>();
+                _annotations = new Dictionary<IWord, Annotation.Annotation>();
                 annotationsListView.Items.Clear();
             }
         }
 
+        private void RefreshAnnotationsList()
+        {
+            annotationsListView.BeginUpdate();
+            annotationsListView.Items.Clear();
+            foreach (var annot in _annotations.Values)
+            {
+                var lvi = new ListViewItem { Text = annot.Subject.Text, Tag = annot };
+                lvi.SubItems.Add(annot.Content);
+                annotationsListView.Items.Add(lvi);
+            }
+            annotationsListView.EndUpdate();
+        }
+
         private void createAnnotationButton_Click(object sender, EventArgs e)
+        {
+            CreateAnnotationForFocusedWord();
+        }
+
+        private void CreateAnnotationForFocusedWord(bool silent = false)
         {
             var focused = wordsView.FocusedItem;
             if (focused?.Selected != true || !(focused.Tag is IWord word))
             {
-                MessageBox.Show("Please select a word first.", "No word selected", MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation);
+                if (!silent)
+                    MessageBox.Show("Please select a word first.", "No word selected", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
                 return;
             }
 
-            if (_annotations.ContainsKey(word))
+            Annotation.Annotation annot;
+            if (_annotations.TryGetValue(word, out annot))
             {
-                MessageBox.Show("There already is an annotation for this word.", "Annotation exists",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation);
+                if (EditAnnotation(annot) != DialogResult.OK) return;
+                _unsaved = true;
+                RefreshAnnotationsList();
                 return;
             }
 
-            var annot = new Annotation.Annotation(word);
+            annot = new Annotation.Annotation(word);
 
             if (EditAnnotation(annot) != DialogResult.OK) return;
             _unsaved = true;
@@ -148,6 +168,11 @@ namespace PdfAnnotator
 
                 _unsaved = false;
             }
+        }
+
+        private void wordsView_ItemActivate(object sender, EventArgs e)
+        {
+            CreateAnnotationForFocusedWord(true);
         }
     }
 }

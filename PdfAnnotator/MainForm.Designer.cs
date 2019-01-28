@@ -82,6 +82,7 @@
             // 
             // wordsView
             // 
+            this.wordsView.Activation = System.Windows.Forms.ItemActivation.TwoClick;
             this.wordsView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.wordHeader,
             this.countHeader});
@@ -95,6 +96,7 @@
             this.wordsView.TabIndex = 1;
             this.wordsView.UseCompatibleStateImageBehavior = false;
             this.wordsView.View = System.Windows.Forms.View.Details;
+            this.wordsView.ItemActivate += new System.EventHandler(this.wordsView_ItemActivate);
             // 
             // wordHeader
             // 

@@ -53,7 +53,7 @@
             this.subjectWordTextBox.Name = "subjectWordTextBox";
             this.subjectWordTextBox.ReadOnly = true;
             this.subjectWordTextBox.Size = new System.Drawing.Size(346, 20);
-            this.subjectWordTextBox.TabIndex = 1;
+            this.subjectWordTextBox.TabIndex = 3;
             // 
             // contentLabel
             // 
@@ -73,7 +73,7 @@
             this.contentTextBox.Multiline = true;
             this.contentTextBox.Name = "contentTextBox";
             this.contentTextBox.Size = new System.Drawing.Size(346, 148);
-            this.contentTextBox.TabIndex = 3;
+            this.contentTextBox.TabIndex = 0;
             // 
             // applyButton
             // 
@@ -81,7 +81,7 @@
             this.applyButton.Location = new System.Drawing.Point(377, 206);
             this.applyButton.Name = "applyButton";
             this.applyButton.Size = new System.Drawing.Size(75, 23);
-            this.applyButton.TabIndex = 4;
+            this.applyButton.TabIndex = 1;
             this.applyButton.Text = "Apply";
             this.applyButton.UseVisualStyleBackColor = true;
             this.applyButton.Click += new System.EventHandler(this.applyButton_Click);
@@ -92,15 +92,17 @@
             this.cancelButton.Location = new System.Drawing.Point(12, 206);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
-            this.cancelButton.TabIndex = 5;
+            this.cancelButton.TabIndex = 2;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
             // EditAnnotationForm
             // 
+            this.AcceptButton = this.applyButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.cancelButton;
             this.ClientSize = new System.Drawing.Size(464, 241);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.applyButton);
