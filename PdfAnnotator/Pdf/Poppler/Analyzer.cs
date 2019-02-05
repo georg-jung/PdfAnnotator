@@ -12,7 +12,7 @@ namespace PdfAnnotator.Pdf.Poppler
     internal class Analyzer : IAnalyzer
     {
         private static readonly string PdfToTextArgs = "-bbox";
-        private static readonly int PdfToTextTimeout = 10000;
+        private static readonly int PdfToTextTimeout = 60000;
 
         private static string GetPdfToTextExePath()
         {
@@ -27,7 +27,7 @@ namespace PdfAnnotator.Pdf.Poppler
             var output = System.IO.Path.GetTempFileName();
             var arg = $"{PdfToTextArgs} \"{document.Path}\" \"{output}\"";
             var res = await ProcessAsyncHelper.RunProcessAsync(p2t, arg, PdfToTextTimeout).ConfigureAwait(false);
-            if (res.ExitCode != 0) throw new ApplicationException($"PdfToText exited with code {res.ExitCode}. StdErr: {res.Error}");
+            if (res.ExitCode != 0) throw new ApplicationException($"PdfToText exited with code {res.ExitCode?.ToString() ?? "null"}. StdErr: {res.Error}");
             var analysis = await ParseXmlAsync(output, document, pageProgress, ct).ConfigureAwait(false);
             System.IO.File.Delete(output);
             return analysis;
