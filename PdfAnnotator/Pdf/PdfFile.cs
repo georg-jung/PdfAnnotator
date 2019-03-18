@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using LiteDB;
 using PdfAnnotator.Utils;
 
-namespace PdfAnnotator
+namespace PdfAnnotator.Pdf
 {
     internal class PdfFile : IPdfFile
     {
+        [BsonId(true)]
+        public Guid Id { get; set; }
+
         public string Path { get; set; }
         public string Md5 { get; set; }
 
