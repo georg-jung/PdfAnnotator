@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using LiteDB;
+using PdfAnnotator.Pdf;
 using PdfAnnotator.Pdf.Poppler;
 
 namespace PdfAnnotator.Utils
@@ -13,8 +14,7 @@ namespace PdfAnnotator.Utils
     {
         // don't use expression body; DbPath should not change during one AppDomain lifetime
         private static string DbPath { get; } = Properties.Settings.Default.DBPath;
-        private static BsonMapper Mapper { get; } = BsonMapper.Global;
-
+        
         static Database()
         {
             EnsureParentDirectoryExists();
@@ -27,26 +27,18 @@ namespace PdfAnnotator.Utils
             Directory.CreateDirectory(folder);
         }
 
-        private static string ResolveCollectionName<T>()
-        {
-            return Mapper.ResolveCollectionName(typeof(T));
-        }
-
-        private static void EnsureCollection<T>(this LiteDatabase db)
-        {
-            db.GetCollection<T>(ResolveCollectionName<T>());
-        }
-
+        
         private static LiteDatabase OpenDatabase()
         {
             var db = new LiteDatabase(DbPath);
             var engine = db.Engine;
             if (engine.UserVersion == 0)
             {
-                db.EnsureCollection<PdfFile>();
-                db.EnsureCollection<Analysis>();
-                
-                // engine.UserVersion = 1;
+                var pdfs = db.GetCollection<PdfFile>();
+                var analyses = db.GetCollection<Analysis>();
+                pdfs.EnsureIndex(x => x.Md5, true);
+                analyses.EnsureIndex(x => x.Document.Md5, true);
+                engine.UserVersion = 1;
             }
             return db;
         }
