@@ -53,7 +53,7 @@ namespace PdfAnnotator
                     var analyzer = new Analyzer();
                     var analysis = await analyzer.AnalyzeAsync(_openFile, analyzePageProgress).ConfigureAwait(true);
 
-                    prgForm.Report("Document loaded. Analysing words...");
+                    prgForm.Report("Document loaded. Analyzing words...");
                     var we = new WordExtractor();
                     words = await we.ExtractAsync(analysis).ConfigureAwait(true);
                 }, this);
