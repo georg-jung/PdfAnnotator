@@ -13,9 +13,9 @@ namespace PdfAnnotator.Annotation
     {
         public int FontSize { get; set; } = 10;
 
-        public Task WriteAnnotatedPdfAsync(PdfFile original, IEnumerable<IAnnotation> annotations, string filePath)
+        public Task WriteAnnotatedPdfAsync(string pdfDocumentPath, IEnumerable<IAnnotation> annotations, string filePath)
         {
-            using (var reader = new PdfReader(original.Path))
+            using (var reader = new PdfReader(pdfDocumentPath))
             using (var outFile = File.Open(filePath, FileMode.Create))
             using (var stamper = new PdfStamper(reader, outFile))
             {

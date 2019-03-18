@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Text;
-using System.Diagnostics;
+using System.Threading.Tasks;
 
-namespace PdfAnnotator
+namespace PdfAnnotator.Utils
 {
-    using System;
-    using System.Diagnostics;
-    using System.Text;
-    using System.Threading.Tasks;
-
     // based on https://gist.github.com/AlexMAS/276eed492bc989e13dcce7c78b9e179d
     public static class ProcessAsyncHelper
     {

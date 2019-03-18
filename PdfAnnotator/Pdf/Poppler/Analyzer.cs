@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using PdfAnnotator.Utils;
 
 namespace PdfAnnotator.Pdf.Poppler
 {
@@ -21,19 +22,19 @@ namespace PdfAnnotator.Pdf.Poppler
             return System.IO.Path.Combine(dir, "poppler", "bin", "pdftotext.exe");
         }
 
-        public async Task<IAnalysis> AnalyzeAsync(PdfFile document, IProgress<int> pageProgress = null, CancellationToken ct = default)
+        public async Task<IAnalysis> AnalyzeAsync(string pdfPath, IProgress<int> pageProgress = null, CancellationToken ct = default)
         {
             var p2t = GetPdfToTextExePath();
             var output = System.IO.Path.GetTempFileName();
-            var arg = $"{PdfToTextArgs} \"{document.Path}\" \"{output}\"";
+            var arg = $"{PdfToTextArgs} \"{pdfPath}\" \"{output}\"";
             var res = await ProcessAsyncHelper.RunProcessAsync(p2t, arg, PdfToTextTimeout).ConfigureAwait(false);
             if (res.ExitCode != 0) throw new ApplicationException($"PdfToText exited with code {res.ExitCode?.ToString() ?? "null"}. StdErr: {res.Error}");
-            var analysis = await ParseXmlAsync(output, document, pageProgress, ct).ConfigureAwait(false);
+            var analysis = await ParseXmlAsync(output, pageProgress, ct).ConfigureAwait(false);
             System.IO.File.Delete(output);
             return analysis;
         }
 
-        private async Task<Analysis> ParseXmlAsync(string htmlOutputPath, PdfFile document, IProgress<int> pageProgress = null, CancellationToken ct = default)
+        private async Task<Analysis> ParseXmlAsync(string htmlOutputPath, IProgress<int> pageProgress = null, CancellationToken ct = default)
         {
             var settings = new XmlReaderSettings { Async = true, DtdProcessing = DtdProcessing.Ignore, CheckCharacters = false };
 
@@ -44,7 +45,7 @@ namespace PdfAnnotator.Pdf.Poppler
                 var inDoc = false;
                 var inPage = false;
                 var pages = new List<Page>();
-                var analysis = new Analysis(document, pages);
+                var analysis = new Analysis(pages);
                 var curWords = new List<Word>();
                 var curPage = new Page(curWords, analysis, 0);
                 Word curWord = null;

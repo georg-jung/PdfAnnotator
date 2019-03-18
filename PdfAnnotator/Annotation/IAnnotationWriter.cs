@@ -8,6 +8,6 @@ namespace PdfAnnotator.Annotation
 {
     internal interface IAnnotationWriter
     {
-        Task WriteAnnotatedPdfAsync(PdfFile original, IEnumerable<IAnnotation> annotations, string filePath);
+        Task WriteAnnotatedPdfAsync(string pdfDocumentPath, IEnumerable<IAnnotation> annotations, string filePath);
     }
 }

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -38,6 +38,9 @@
     <Reference Include="itextsharp, Version=5.5.13.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
       <HintPath>..\packages\iTextSharp.5.5.13\lib\itextsharp.dll</HintPath>
     </Reference>
+    <Reference Include="LiteDB, Version=4.1.4.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiteDB.4.1.4\lib\net40\LiteDB.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -65,7 +68,9 @@
       <DependentUpon>EditAnnotationForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Extensions.cs" />
-    <Compile Include="InvalidXmlCharacterReplacingStreamReader.cs" />
+    <Compile Include="Utils\Database.cs" />
+    <Compile Include="Utils\Hashes.cs" />
+    <Compile Include="Utils\InvalidXmlCharacterReplacingStreamReader.cs" />
     <Compile Include="Pdf\AggregatedWord.cs" />
     <Compile Include="Pdf\IAnalysis.cs" />
     <Compile Include="Pdf\IAnalyzer.cs" />
@@ -76,13 +81,14 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Pdf\IPdfFile.cs" />
     <Compile Include="Pdf\IWord.cs" />
     <Compile Include="Pdf\PdfFile.cs" />
     <Compile Include="Pdf\Poppler\Analysis.cs" />
     <Compile Include="Pdf\Poppler\Analyzer.cs" />
     <Compile Include="Pdf\Poppler\Page.cs" />
     <Compile Include="Pdf\Poppler\Word.cs" />
-    <Compile Include="ProcessAsyncHelper.cs" />
+    <Compile Include="Utils\ProcessAsyncHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProgressForm.cs">
       <SubType>Form</SubType>

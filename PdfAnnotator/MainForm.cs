@@ -51,7 +51,7 @@ namespace PdfAnnotator
                     });
 
                     var analyzer = new Analyzer();
-                    var analysis = await analyzer.AnalyzeAsync(_openFile, analyzePageProgress).ConfigureAwait(true);
+                    var analysis = await analyzer.AnalyzeAsync(_openFile.Path, analyzePageProgress).ConfigureAwait(true);
 
                     prgForm.Report("Document loaded. Analyzing words...");
                     var we = new WordExtractor();
@@ -164,7 +164,7 @@ namespace PdfAnnotator
                 if (sfd.ShowDialog() != DialogResult.OK) return;
 
                 var writer = new TextSharpAnnotationWriter();
-                await writer.WriteAnnotatedPdfAsync(_openFile, _annotations.Values, sfd.FileName).ConfigureAwait(false);
+                await writer.WriteAnnotatedPdfAsync(_openFile.Path, _annotations.Values, sfd.FileName).ConfigureAwait(false);
 
                 _unsaved = false;
             }

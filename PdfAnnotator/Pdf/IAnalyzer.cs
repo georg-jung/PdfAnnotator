@@ -6,6 +6,6 @@ namespace PdfAnnotator.Pdf
 {
     internal interface IAnalyzer
     {
-        Task<IAnalysis> AnalyzeAsync(PdfFile document, IProgress<int> pageProgress = null, CancellationToken ct = default);
+        Task<IAnalysis> AnalyzeAsync(string pdfPath, IProgress<int> pageProgress = null, CancellationToken ct = default);
     }
 }
