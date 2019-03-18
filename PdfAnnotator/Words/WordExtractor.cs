@@ -21,7 +21,7 @@ namespace PdfAnnotator.Words
             _jlf.Whitelist = wl;
         }
 
-        public Task<IReadOnlyList<IWord>> ExtractAsync(IAnalysis analysis)
+        public Task<IReadOnlyList<Word>> ExtractAsync(IAnalysis analysis)
         {
             var words = new Dictionary<string, Word>();
             foreach (var pg in analysis.Pages)
@@ -36,7 +36,7 @@ namespace PdfAnnotator.Words
                 }
             }
 
-            IReadOnlyList<IWord> ret = words.Values.ToList();
+            IReadOnlyList<Word> ret = words.Values.ToList();
             return Task.FromResult(ret);
         }
 
@@ -57,5 +57,7 @@ namespace PdfAnnotator.Words
             w = _lf.Map(w);
             return w;
         }
+
+        async Task<IReadOnlyList<IWord>> IWordExtractor.ExtractAsync(IAnalysis analysis) => await ExtractAsync(analysis).ConfigureAwait(false);
     }
 }
