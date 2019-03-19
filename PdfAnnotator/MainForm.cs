@@ -81,12 +81,35 @@ namespace PdfAnnotator
                 annotationsListView.Items.Clear();
             }
 
-            var saved = Annotations.GetAnnotations(_openFile);
+            var saved = Annotations.GetAnnotations(_openFile.Md5);
+            if (saved == null)
+            {
+                var found = Annotations.GetAnnotationsByPath(_openFile.Path);
+                if (found.Item1 == null || found.Item2 == null)
+                    return;
+                var oldPdf = found.Item1;
+                if (MessageBox.Show(
+                        $@"There are no saved annotations for the file you opened, but for another file which existed at the same path. 
+Possibly you updated the file's contents. Do you want to load the saved annotations corresponding to the old file, which was last seen {oldPdf.LastSeen}?",
+                        "File mismatch", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                    return;
+                saved = found.Item2;
+            }
+
+            var added = 0;
             foreach (var a in saved)
             {
                 var wrd = _words.FirstOrDefault(w => w.Text == a.Word);
                 if (wrd == null) continue;
                 AddAnnotation(wrd, a.Content);
+                added++;
+            }
+
+            if (added != saved.Count)
+            {
+                MessageBox.Show(
+                    $"{added} of {saved.Count} saved annotations had corresponding words in this PDF document and were loaded.",
+                    "Not all annotations loaded", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 

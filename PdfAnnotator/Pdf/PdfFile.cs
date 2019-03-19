@@ -11,6 +11,7 @@ namespace PdfAnnotator.Pdf
 
         public string Path { get; set; }
         public string Md5 { get; set; }
+        public DateTime LastSeen { get; set; }
 
         public void ComputeMd5()
         {

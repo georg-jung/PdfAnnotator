@@ -18,13 +18,43 @@ namespace PdfAnnotator.Persistence
             return repo.FirstOrDefault<PdfFile>(p => p.Md5 == md5);
         }
 
-        public static List<WordAnnotation> GetAnnotations(PdfFile document)
+        private static List<PdfFile> GetPdfsByPath(this LiteRepository repo, string path)
+        {
+            var lPath = path.ToLowerInvariant();
+            // attention: this just works because there exists an LOWER(Path) index, as otherwise it would compare SoMeString against somestring
+            // if one would add a lower function here to the left the index would not be used
+            return repo.Fetch<PdfFile>(p => p.Path == lPath);
+        }
+
+        public static List<WordAnnotation> GetAnnotations(string contentMd5)
         {
             using (var repo = Database.GetRepository())
             {
-                var pdf = repo.GetPdf(document.Md5);
-                if (pdf == null) return new List<WordAnnotation>();
+                var pdf = repo.GetPdf(contentMd5);
+                if (pdf == null) return null;
                 return repo.Fetch<WordAnnotation>(wa => wa.Document.Id == pdf.Id);
+            }
+        }
+
+        public static (PdfFile, List<WordAnnotation>) GetAnnotationsByPath(string path)
+        {
+            using (var repo = Database.GetRepository())
+            {
+                var pdfs = repo.GetPdfsByPath(path);
+                if (pdfs == null || !pdfs.Any()) return (null, null);
+                var newest = pdfs.OrderByDescending(p => p.LastSeen).First();
+                return (newest, repo.Fetch<WordAnnotation>(wa => wa.Document.Id == newest.Id));
+            }
+        }
+
+        public static IEnumerable<(string, List<WordAnnotation>)> GetAnnotationsByWords(IEnumerable<string> words)
+        {
+            using (var repo = Database.GetRepository())
+            {
+                foreach (var word in words)
+                {
+                    yield return (word, repo.Query<WordAnnotation>().Where(wa => wa.Word == word).Include(wa => wa.Document).ToList());
+                }
             }
         }
 
@@ -37,6 +67,8 @@ namespace PdfAnnotator.Persistence
                     value.Id = (Guid)repo.Insert<PdfFile>(value);
                 else
                     value.Id = pdf.Id;
+                value.LastSeen = DateTime.Now;
+                repo.Update(value);
             }
         }
 
