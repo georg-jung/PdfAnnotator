@@ -16,7 +16,7 @@ namespace PdfAnnotator.Utils
             {
                 var sha = new SHA256Managed();
                 var hash = sha.ComputeHash(stream);
-                return BitConverter.ToString(hash).Replace("-", string.Empty);
+                return BitConverter.ToString(hash).Replace("-", string.Empty).ToLowerInvariant();
             }
         }
     }

@@ -8,8 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using PdfAnnotator.Annotation;
+using PdfAnnotator.Pdf;
 using PdfAnnotator.Pdf.Poppler;
+using PdfAnnotator.Persistence;
+using PdfAnnotator.Persistence.Model;
+using PdfAnnotator.Utils;
 using PdfAnnotator.Words;
+using IWord = PdfAnnotator.Words.IWord;
 
 namespace PdfAnnotator
 {
@@ -44,6 +49,7 @@ namespace PdfAnnotator
                 IReadOnlyList<IWord> words = null;
                 prgForm.ShowWhile(async () =>
                 {
+                    var md5Task = Task.Run(() => _openFile.ComputeMd5());
                     prgForm.Report("Extracting words...");
                     var analyzePageProgress = new Progress<int>(pg =>
                     {
@@ -52,6 +58,7 @@ namespace PdfAnnotator
 
                     var analyzer = new Analyzer();
                     var analysis = await analyzer.AnalyzeAsync(_openFile.Path, analyzePageProgress).ConfigureAwait(true);
+                    await md5Task.ConfigureAwait(true);
 
                     prgForm.Report("Document loaded. Analyzing words...");
                     var we = new WordExtractor();
@@ -69,11 +76,17 @@ namespace PdfAnnotator
                 }
                 wordsView.EndUpdate();
 
-                prgForm.Close();
-
                 _words = words;
                 _annotations = new Dictionary<IWord, Annotation.Annotation>();
                 annotationsListView.Items.Clear();
+            }
+
+            var saved = Annotations.GetAnnotations(_openFile);
+            foreach (var a in saved)
+            {
+                var wrd = _words.FirstOrDefault(w => w.Text == a.Word);
+                if (wrd == null) continue;
+                AddAnnotation(wrd, a.Content);
             }
         }
 
@@ -119,26 +132,78 @@ namespace PdfAnnotator
 
             if (EditAnnotation(annot) != DialogResult.OK) return;
             _unsaved = true;
-            _annotations.Add(word, annot);
+            AddAnnotation(word, annot);
+            SaveToDb();
+        }
 
-            var lvi = new ListViewItem { Text = word.Text, Tag = annot };
-            lvi.SubItems.Add(annot.Content);
+        private void SaveToDb()
+        {
+            var toSave = _annotations.Values.Select(a => new WordAnnotation() { Content = a.Content, Word = a.Subject.Text });
+            Annotations.SaveAnnotations(_openFile, toSave);
+            _unsaved = false;
+        }
+
+        private Annotation.Annotation AddAnnotation(IWord word, string content)
+        {
+            var ann = new Annotation.Annotation(word) { Content = content };
+            AddAnnotation(word, ann);
+            return ann;
+        }
+
+        private void AddAnnotation(IWord word, Annotation.Annotation value)
+        {
+            _annotations.Add(word, value);
+
+            var lvi = new ListViewItem { Text = word.Text, Tag = value };
+            lvi.SubItems.Add(value.Content);
             annotationsListView.Items.Add(lvi);
         }
 
-        private void editAnnotationButton_Click(object sender, EventArgs e)
+        private void EditFocusedAnnotation(bool silent = false)
         {
             var focused = annotationsListView.FocusedItem;
             if (focused?.Selected != true || !(focused.Tag is Annotation.Annotation annot))
             {
-                MessageBox.Show("Please select an annotation first.", "No annotation selected", MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation);
+                if (!silent)
+                    MessageBox.Show("Please select an annotation first.", "No annotation selected", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
                 return;
             }
 
             if (EditAnnotation(annot) != DialogResult.OK) return;
             _unsaved = true;
             focused.SubItems[1].Text = annot.Content;
+            SaveToDb();
+        }
+
+        private void DeleteFocusedAnnotation(bool silent = false)
+        {
+            var focused = annotationsListView.FocusedItem;
+            if (focused?.Selected != true || !(focused.Tag is Annotation.Annotation annot))
+            {
+                if (!silent)
+                    MessageBox.Show("Please select an annotation first.", "No annotation selected", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            DeleteAnnotation(annot);
+            focused.Remove();
+        }
+
+        private void DeleteAnnotation(Annotation.Annotation annotation)
+        {
+            // each annotation will only be in the dict once
+            var item = _annotations.First(kvp => kvp.Value == annotation);
+            _annotations.Remove(item.Key);
+
+            _unsaved = true;
+            SaveToDb();
+        }
+
+        private void editAnnotationButton_Click(object sender, EventArgs e)
+        {
+            EditFocusedAnnotation();
         }
 
         private static DialogResult EditAnnotation(Annotation.Annotation value)
@@ -173,6 +238,16 @@ namespace PdfAnnotator
         private void wordsView_ItemActivate(object sender, EventArgs e)
         {
             CreateAnnotationForFocusedWord(true);
+        }
+
+        private void deleteAnnotationButton_Click(object sender, EventArgs e)
+        {
+            DeleteFocusedAnnotation();
+        }
+
+        private void annotationsListView_ItemActivate(object sender, EventArgs e)
+        {
+            EditFocusedAnnotation(true);
         }
     }
 }

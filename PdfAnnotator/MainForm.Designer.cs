@@ -44,6 +44,8 @@
             this.contentHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.annotationControlsPanel = new System.Windows.Forms.Panel();
             this.editAnnotationButton = new System.Windows.Forms.Button();
+            this.deleteAnnotationButton = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             this.mainMenu.SuspendLayout();
             this.candidatesGroupBox.SuspendLayout();
             this.candidateControlsHeader.SuspendLayout();
@@ -175,6 +177,7 @@
             // 
             // annotationsListView
             // 
+            this.annotationsListView.Activation = System.Windows.Forms.ItemActivation.TwoClick;
             this.annotationsListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.annotationSubjectWordHeader,
             this.contentHeader});
@@ -188,6 +191,7 @@
             this.annotationsListView.TabIndex = 2;
             this.annotationsListView.UseCompatibleStateImageBehavior = false;
             this.annotationsListView.View = System.Windows.Forms.View.Details;
+            this.annotationsListView.ItemActivate += new System.EventHandler(this.annotationsListView_ItemActivate);
             // 
             // annotationSubjectWordHeader
             // 
@@ -201,6 +205,8 @@
             // 
             // annotationControlsPanel
             // 
+            this.annotationControlsPanel.Controls.Add(this.label1);
+            this.annotationControlsPanel.Controls.Add(this.deleteAnnotationButton);
             this.annotationControlsPanel.Controls.Add(this.editAnnotationButton);
             this.annotationControlsPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.annotationControlsPanel.Location = new System.Drawing.Point(6, 237);
@@ -217,6 +223,27 @@
             this.editAnnotationButton.Text = "Edit";
             this.editAnnotationButton.UseVisualStyleBackColor = true;
             this.editAnnotationButton.Click += new System.EventHandler(this.editAnnotationButton_Click);
+            // 
+            // deleteAnnotationButton
+            // 
+            this.deleteAnnotationButton.Location = new System.Drawing.Point(90, 6);
+            this.deleteAnnotationButton.Name = "deleteAnnotationButton";
+            this.deleteAnnotationButton.Size = new System.Drawing.Size(75, 23);
+            this.deleteAnnotationButton.TabIndex = 1;
+            this.deleteAnnotationButton.Text = "Delete";
+            this.deleteAnnotationButton.UseVisualStyleBackColor = true;
+            this.deleteAnnotationButton.Click += new System.EventHandler(this.deleteAnnotationButton_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.ForeColor = System.Drawing.SystemColors.ControlDark;
+            this.label1.Location = new System.Drawing.Point(171, 11);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(554, 13);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "Your annotations are automatically saved. If you open a document with the same co" +
+    "ntent again they will be restored.";
             // 
             // MainForm
             // 
@@ -240,6 +267,7 @@
             this.splitContainer1.ResumeLayout(false);
             this.annotationsGroupBox.ResumeLayout(false);
             this.annotationControlsPanel.ResumeLayout(false);
+            this.annotationControlsPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -263,6 +291,8 @@
         private System.Windows.Forms.ColumnHeader contentHeader;
         private System.Windows.Forms.Panel annotationControlsPanel;
         private System.Windows.Forms.Button editAnnotationButton;
+        private System.Windows.Forms.Button deleteAnnotationButton;
+        private System.Windows.Forms.Label label1;
     }
 }
 

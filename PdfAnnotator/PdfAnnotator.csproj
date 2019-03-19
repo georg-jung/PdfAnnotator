@@ -68,6 +68,8 @@
       <DependentUpon>EditAnnotationForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Extensions.cs" />
+    <Compile Include="Persistence\Annotations.cs" />
+    <Compile Include="Persistence\Model\WordAnnotation.cs" />
     <Compile Include="Utils\Database.cs" />
     <Compile Include="Utils\Hashes.cs" />
     <Compile Include="Utils\InvalidXmlCharacterReplacingStreamReader.cs" />

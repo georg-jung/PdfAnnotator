@@ -34,7 +34,7 @@ namespace PdfAnnotator.Pdf.Poppler
             return analysis;
         }
 
-        private async Task<Analysis> ParseXmlAsync(string htmlOutputPath, IProgress<int> pageProgress = null, CancellationToken ct = default)
+        private static async Task<Analysis> ParseXmlAsync(string htmlOutputPath, IProgress<int> pageProgress = null, CancellationToken ct = default)
         {
             var settings = new XmlReaderSettings { Async = true, DtdProcessing = DtdProcessing.Ignore, CheckCharacters = false };
 
