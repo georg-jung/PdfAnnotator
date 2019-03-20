@@ -1,4 +1,4 @@
-﻿namespace PdfAnnotator
+namespace PdfAnnotator
 {
     partial class MainForm
     {
@@ -30,6 +30,7 @@
         {
             this.mainMenu = new System.Windows.Forms.MenuStrip();
             this.openPdfMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openLruPdfMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createPdfMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wordsView = new System.Windows.Forms.ListView();
             this.wordHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -43,9 +44,9 @@
             this.annotationSubjectWordHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contentHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.annotationControlsPanel = new System.Windows.Forms.Panel();
-            this.editAnnotationButton = new System.Windows.Forms.Button();
+            this.autoSaveInfoLabel = new System.Windows.Forms.Label();
             this.deleteAnnotationButton = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
+            this.editAnnotationButton = new System.Windows.Forms.Button();
             this.mainMenu.SuspendLayout();
             this.candidatesGroupBox.SuspendLayout();
             this.candidateControlsHeader.SuspendLayout();
@@ -61,9 +62,11 @@
             // 
             this.mainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openPdfMenuItem,
+            this.openLruPdfMenuItem,
             this.createPdfMenuItem});
             this.mainMenu.Location = new System.Drawing.Point(0, 0);
             this.mainMenu.Name = "mainMenu";
+            this.mainMenu.ShowItemToolTips = true;
             this.mainMenu.Size = new System.Drawing.Size(942, 24);
             this.mainMenu.TabIndex = 0;
             this.mainMenu.Text = "menuStrip1";
@@ -74,6 +77,12 @@
             this.openPdfMenuItem.Size = new System.Drawing.Size(81, 20);
             this.openPdfMenuItem.Text = "Open PDF...";
             this.openPdfMenuItem.Click += new System.EventHandler(this.openPdfMenuItem_Click);
+            // 
+            // openLruPdfMenuItem
+            // 
+            this.openLruPdfMenuItem.Name = "openLruPdfMenuItem";
+            this.openLruPdfMenuItem.Size = new System.Drawing.Size(149, 20);
+            this.openLruPdfMenuItem.Text = "Open Recently Used PDF";
             // 
             // createPdfMenuItem
             // 
@@ -205,7 +214,7 @@
             // 
             // annotationControlsPanel
             // 
-            this.annotationControlsPanel.Controls.Add(this.label1);
+            this.annotationControlsPanel.Controls.Add(this.autoSaveInfoLabel);
             this.annotationControlsPanel.Controls.Add(this.deleteAnnotationButton);
             this.annotationControlsPanel.Controls.Add(this.editAnnotationButton);
             this.annotationControlsPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -214,15 +223,16 @@
             this.annotationControlsPanel.Size = new System.Drawing.Size(912, 36);
             this.annotationControlsPanel.TabIndex = 3;
             // 
-            // editAnnotationButton
+            // autoSaveInfoLabel
             // 
-            this.editAnnotationButton.Location = new System.Drawing.Point(9, 6);
-            this.editAnnotationButton.Name = "editAnnotationButton";
-            this.editAnnotationButton.Size = new System.Drawing.Size(75, 23);
-            this.editAnnotationButton.TabIndex = 0;
-            this.editAnnotationButton.Text = "Edit";
-            this.editAnnotationButton.UseVisualStyleBackColor = true;
-            this.editAnnotationButton.Click += new System.EventHandler(this.editAnnotationButton_Click);
+            this.autoSaveInfoLabel.AutoSize = true;
+            this.autoSaveInfoLabel.ForeColor = System.Drawing.SystemColors.ControlDark;
+            this.autoSaveInfoLabel.Location = new System.Drawing.Point(171, 11);
+            this.autoSaveInfoLabel.Name = "autoSaveInfoLabel";
+            this.autoSaveInfoLabel.Size = new System.Drawing.Size(554, 13);
+            this.autoSaveInfoLabel.TabIndex = 2;
+            this.autoSaveInfoLabel.Text = "Your annotations are automatically saved. If you open a document with the same co" +
+    "ntent again they will be restored.";
             // 
             // deleteAnnotationButton
             // 
@@ -234,16 +244,15 @@
             this.deleteAnnotationButton.UseVisualStyleBackColor = true;
             this.deleteAnnotationButton.Click += new System.EventHandler(this.deleteAnnotationButton_Click);
             // 
-            // label1
+            // editAnnotationButton
             // 
-            this.label1.AutoSize = true;
-            this.label1.ForeColor = System.Drawing.SystemColors.ControlDark;
-            this.label1.Location = new System.Drawing.Point(171, 11);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(554, 13);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Your annotations are automatically saved. If you open a document with the same co" +
-    "ntent again they will be restored.";
+            this.editAnnotationButton.Location = new System.Drawing.Point(9, 6);
+            this.editAnnotationButton.Name = "editAnnotationButton";
+            this.editAnnotationButton.Size = new System.Drawing.Size(75, 23);
+            this.editAnnotationButton.TabIndex = 0;
+            this.editAnnotationButton.Text = "Edit";
+            this.editAnnotationButton.UseVisualStyleBackColor = true;
+            this.editAnnotationButton.Click += new System.EventHandler(this.editAnnotationButton_Click);
             // 
             // MainForm
             // 
@@ -257,6 +266,7 @@
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "PdfAnnotator - Georg Jung";
+            this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.mainMenu.ResumeLayout(false);
             this.mainMenu.PerformLayout();
             this.candidatesGroupBox.ResumeLayout(false);
@@ -292,7 +302,8 @@
         private System.Windows.Forms.Panel annotationControlsPanel;
         private System.Windows.Forms.Button editAnnotationButton;
         private System.Windows.Forms.Button deleteAnnotationButton;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label autoSaveInfoLabel;
+        private System.Windows.Forms.ToolStripMenuItem openLruPdfMenuItem;
     }
 }
 

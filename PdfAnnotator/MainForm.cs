@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,21 +31,11 @@ namespace PdfAnnotator
             InitializeComponent();
         }
 
-        private void openPdfMenuItem_Click(object sender, EventArgs e)
+        private void OpenPdf(string path)
         {
-            if (_unsaved && _openFile != null)
-            {
-                if (MessageBox.Show("If you open a new file, unsaved changes will be lost. Do you want to continue?",
-                        "Unsaved changes", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
-            }
-
-            using (var ofd = new OpenFileDialog())
             using (var prgForm = new ProgressForm())
             {
-                ofd.Filter = "PDF files|*.pdf|All files|*";
-                if (ofd.ShowDialog() != DialogResult.OK) return;
-
-                _openFile = new PdfFile { Path = ofd.FileName };
+                _openFile = new PdfFile { Path = path };
 
                 IReadOnlyList<IWord> words = null;
                 prgForm.ShowWhile(async () =>
@@ -64,23 +55,32 @@ namespace PdfAnnotator
                     var we = new WordExtractor();
                     words = await we.ExtractAsync(analysis).ConfigureAwait(true);
                 }, this);
-                var ordered = words.OrderByDescending(w => w.Appearances.Count);
-
-                wordsView.BeginUpdate();
-                wordsView.Items.Clear();
-                foreach (var w in ordered)
-                {
-                    var lvi = new ListViewItem { Text = w.Text, Tag = w };
-                    lvi.SubItems.Add(w.Appearances.Count.ToString());
-                    wordsView.Items.Add(lvi);
-                }
-                wordsView.EndUpdate();
-
-                _words = words;
+                ListWordsInOpenDocument(words);
                 _annotations = new Dictionary<IWord, Annotation.Annotation>();
                 annotationsListView.Items.Clear();
             }
+            LoadSavedAnnotationsForOpenFile();
+        }
 
+        private void ListWordsInOpenDocument(IReadOnlyList<IWord> words)
+        {
+            var ordered = words.OrderByDescending(w => w.Appearances.Count);
+
+            wordsView.BeginUpdate();
+            wordsView.Items.Clear();
+            foreach (var w in ordered)
+            {
+                var lvi = new ListViewItem { Text = w.Text, Tag = w };
+                lvi.SubItems.Add(w.Appearances.Count.ToString());
+                wordsView.Items.Add(lvi);
+            }
+            wordsView.EndUpdate();
+
+            _words = words;
+        }
+
+        private void LoadSavedAnnotationsForOpenFile()
+        {
             var saved = Annotations.GetAnnotations(_openFile.Md5);
             if (saved == null)
             {
@@ -110,6 +110,30 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
                 MessageBox.Show(
                     $"{added} of {saved.Count} saved annotations had corresponding words in this PDF document and were loaded.",
                     "Not all annotations loaded", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private bool ShouldOpenFile()
+        {
+            if (_unsaved && _openFile != null)
+            {
+                if (MessageBox.Show("If you open a new file, unsaved changes will be lost. Do you want to continue?",
+                        "Unsaved changes", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return false;
+            }
+
+            return true;
+        }
+
+        private void openPdfMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!ShouldOpenFile()) return;
+
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "PDF files|*.pdf|All files|*";
+                if (ofd.ShowDialog() != DialogResult.OK) return;
+
+                OpenPdf(ofd.FileName);
             }
         }
 
@@ -164,6 +188,7 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
             var toSave = _annotations.Values.Select(a => new WordAnnotation() { Content = a.Content, Word = a.Subject.Text });
             Annotations.SaveAnnotations(_openFile, toSave);
             _unsaved = false;
+            LoadLruList();
         }
 
         private Annotation.Annotation AddAnnotation(IWord word, string content)
@@ -271,6 +296,34 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
         private void annotationsListView_ItemActivate(object sender, EventArgs e)
         {
             EditFocusedAnnotation(true);
+        }
+
+        private void LoadLruList()
+        {
+            var pdfs = Annotations.GetLruPdfs();
+            openLruPdfMenuItem.DropDownItems.Clear();
+            foreach (var pdf in pdfs)
+            {
+                var fileName = Path.GetFileName(pdf.Path);
+                var txt = $"{fileName} {pdf.LastSeen}";
+                var tsi = openLruPdfMenuItem.DropDownItems.Add(txt);
+                tsi.ToolTipText = pdf.Path;
+                tsi.AutoToolTip = true;
+                tsi.Click += (s, e) => LoadPdf(pdf.Path);
+            }
+
+            openLruPdfMenuItem.Enabled = pdfs.Count > 0;
+        }
+
+        private void LoadPdf(string path)
+        {
+            if (!ShouldOpenFile()) return;
+            OpenPdf(path);
+        }
+        
+        private void MainForm_Shown(object sender, EventArgs e)
+        {
+            LoadLruList();
         }
     }
 }

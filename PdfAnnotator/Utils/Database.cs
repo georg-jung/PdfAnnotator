@@ -40,6 +40,7 @@ namespace PdfAnnotator.Utils
                 var annotation = db.GetCollection<WordAnnotation>();
                 pdf.EnsureIndex(x => x.Md5, true);
                 pdf.EnsureIndex(x => x.Path, "LOWER($.Path)");
+                pdf.EnsureIndex(x => x.LastSeen);
                 // todo: which index is right?
                 //annotation.EnsureIndex(x => x.Document);
                 annotation.EnsureIndex(x => x.Document.Id);
