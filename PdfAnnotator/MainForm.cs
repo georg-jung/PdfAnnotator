@@ -325,5 +325,13 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
         {
             LoadLruList();
         }
+
+        private void allAnnotationsMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var frm = new AllAnnotationsForm())
+            {
+                frm.ShowDialog();
+            }
+        }
     }
 }

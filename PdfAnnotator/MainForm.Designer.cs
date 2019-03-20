@@ -1,4 +1,4 @@
-namespace PdfAnnotator
+﻿namespace PdfAnnotator
 {
     partial class MainForm
     {
@@ -31,6 +31,7 @@ namespace PdfAnnotator
             this.mainMenu = new System.Windows.Forms.MenuStrip();
             this.openPdfMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openLruPdfMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.allAnnotationsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createPdfMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wordsView = new System.Windows.Forms.ListView();
             this.wordHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -63,6 +64,7 @@ namespace PdfAnnotator
             this.mainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openPdfMenuItem,
             this.openLruPdfMenuItem,
+            this.allAnnotationsMenuItem,
             this.createPdfMenuItem});
             this.mainMenu.Location = new System.Drawing.Point(0, 0);
             this.mainMenu.Name = "mainMenu";
@@ -83,6 +85,13 @@ namespace PdfAnnotator
             this.openLruPdfMenuItem.Name = "openLruPdfMenuItem";
             this.openLruPdfMenuItem.Size = new System.Drawing.Size(149, 20);
             this.openLruPdfMenuItem.Text = "Open Recently Used PDF";
+            // 
+            // allAnnotationsMenuItem
+            // 
+            this.allAnnotationsMenuItem.Name = "allAnnotationsMenuItem";
+            this.allAnnotationsMenuItem.Size = new System.Drawing.Size(110, 20);
+            this.allAnnotationsMenuItem.Text = "All Annotations...";
+            this.allAnnotationsMenuItem.Click += new System.EventHandler(this.allAnnotationsMenuItem_Click);
             // 
             // createPdfMenuItem
             // 
@@ -304,6 +313,7 @@ namespace PdfAnnotator
         private System.Windows.Forms.Button deleteAnnotationButton;
         private System.Windows.Forms.Label autoSaveInfoLabel;
         private System.Windows.Forms.ToolStripMenuItem openLruPdfMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem allAnnotationsMenuItem;
     }
 }
 

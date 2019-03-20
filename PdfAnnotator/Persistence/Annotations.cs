@@ -26,6 +26,17 @@ namespace PdfAnnotator.Persistence
             return repo.Fetch<PdfFile>(p => p.Path == lPath);
         }
 
+        public static List<WordAnnotation> GetAnnotations(bool includeDocuments, int? maxCount = null)
+        {
+            using (var repo = Database.GetRepository())
+            {
+                var q = repo.Query<WordAnnotation>();
+                if (includeDocuments) q = q.Include(wa => wa.Document);
+                if (maxCount.HasValue) q = q.Limit(maxCount.Value);
+                return q.ToList();
+            }
+        }
+
         public static List<WordAnnotation> GetAnnotations(string contentMd5)
         {
             using (var repo = Database.GetRepository())
