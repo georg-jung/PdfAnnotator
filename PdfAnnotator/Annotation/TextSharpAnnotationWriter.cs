@@ -4,8 +4,16 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
+using iText.Forms;
+using iText.Forms.Fields;
+using iText.Kernel.Colors;
+using iText.Kernel.Font;
+using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Action;
+using iText.Kernel.Pdf.Annot;
+using iText.Kernel.Pdf.Colorspace;
+using iText.StyledXmlParser.Jsoup.Nodes;
+using Rectangle = iText.Kernel.Geom.Rectangle;
 
 namespace PdfAnnotator.Annotation
 {
@@ -17,48 +25,52 @@ namespace PdfAnnotator.Annotation
         {
             using (var reader = new PdfReader(pdfDocumentPath))
             using (var outFile = File.Open(filePath, FileMode.Create))
-            using (var stamper = new PdfStamper(reader, outFile))
+            using (var writer = new PdfWriter(outFile))
+            using (var doc = new PdfDocument(reader, writer))
             {
+                var acroForm = PdfAcroForm.GetAcroForm(doc, true);
                 foreach (var ann in annotations)
                 {
                     var targets = ann.SelectedTargets;
                     if (targets == null || targets.Count < 1) targets = ann.Subject.Appearances ?? throw new ArgumentException($"The subject word {ann.Subject.Text} for a given annotation has no appearances.");
                     foreach (var trg in targets)
                     {
-                        var font = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, false);
+                        var page = doc.GetPage(trg.Parent.Index + 1);
+
+                        var font = PdfFontFactory.CreateRegisteredFont(iText.IO.Font.Constants.StandardFonts.HELVETICA);
                         var coord = trg.GetPdfCoords();
-                        var buttonRect = new iTextSharp.text.Rectangle(coord.Llx, coord.Lly, coord.Urx, coord.Ury);
-                        var contentWidth = font.GetWidthPoint(ann.Content, FontSize);
-                        var helpWith = Math.Min(trg.Parent.Width / 2, contentWidth);
-                        var helpHeight = 13 * ((float)Math.Ceiling(contentWidth / helpWith) + ann.Content.Count(x => x == '\n') );
-                        var targetWidthHalf = (coord.Urx - coord.Llx) / 2;
-                        var helpWidthHalf = helpWith / 2;
-                        var helpRect = new iTextSharp.text.Rectangle(coord.Llx + targetWidthHalf - helpWidthHalf - 5, coord.Ury + 5, coord.Urx - targetWidthHalf + helpWidthHalf + 5, coord.Ury + 5 + helpHeight + 6);
+                        var buttonRect = new Rectangle(coord.Llx, coord.Lly, coord.width, coord.height);
+                        var contentWidth = font.GetWidth(ann.Content, FontSize);
+                        var helpWidth = Math.Min(trg.Parent.Width / 2, contentWidth);
+                        var helpHeight = 12 * ((float)Math.Ceiling(contentWidth / helpWidth) + ann.Content.Count(x => x == '\n'));
+                        var targetWidthHalf = coord.width / 2;
+                        var helpWidthHalf = helpWidth / 2;
+                        var helpRect = new Rectangle(coord.Llx + targetWidthHalf - helpWidthHalf - 5, coord.Lly + coord.height + 5, helpWidth + 10, helpHeight + 6);
 
-                        var textField = new TextField(stamper.Writer, helpRect, Guid.NewGuid().ToString("n"))
-                        {
-                            Text = ann.Content,
-                            FontSize = FontSize,
-                            Font = font,
-                            TextColor = BaseColor.DARK_GRAY,
-                            BackgroundColor = BaseColor.LIGHT_GRAY,
-                            Options = BaseField.MULTILINE | BaseField.READ_ONLY,
-                            Visibility = BaseField.HIDDEN,
-                            BorderColor = BaseColor.LIGHT_GRAY
-                        };
-                        textField.SetExtraMargin(2f, 2f);
-                        textField.Alignment = Element.ALIGN_TOP | Element.ALIGN_CENTER;
-                        var textWidget = textField.GetTextField();
-                        textWidget.SetFieldFlags(4097);
-                        stamper.AddAnnotation(textWidget, trg.Parent.Index + 1);
+                        var textFieldName = Guid.NewGuid().ToString("n");
+                        var textField = PdfFormField.CreateText(doc, helpRect, textFieldName);
+                        textField.SetValue(ann.Content, font, FontSize);
+                        textField.SetColor(ColorConstants.DARK_GRAY);
+                        textField.SetBackgroundColor(ColorConstants.LIGHT_GRAY);
+                        textField.SetReadOnly(true);
+                        textField.SetMultiline(true);
+                        textField.SetVisibility(PdfFormField.HIDDEN);
+                        textField.SetBorderColor(ColorConstants.LIGHT_GRAY);
+                        textField.SetFieldFlags(4097);
 
-                        var button = new PushbuttonField(stamper.Writer, buttonRect, Guid.NewGuid().ToString("n"));
-                        var buttonWidget = button.Field;
-                        var enter = PdfAction.CreateHide(textWidget, false);
-                        buttonWidget.SetAdditionalActions(PdfName.E, enter);
-                        var exit = PdfAction.CreateHide(textWidget, true);
-                        buttonWidget.SetAdditionalActions(PdfName.X, exit);
-                        stamper.AddAnnotation(buttonWidget, trg.Parent.Index + 1);
+                        acroForm.AddFieldAppearanceToPage(textField, page);
+
+                        
+                        var enter = PdfAction.CreateHide(textFieldName, false);
+                        var exit = PdfAction.CreateHide(textFieldName, true);
+                        
+                        var btn = PdfFormField.CreatePushButton(doc, buttonRect, Guid.NewGuid().ToString("n"),
+                            string.Empty);
+                        btn.SetBackgroundColor(null);
+                        btn.SetBorderWidth(0);
+                        btn.SetAdditionalAction(PdfName.E, enter);
+                        btn.SetAdditionalAction(PdfName.X, exit);
+                        acroForm.AddFieldAppearanceToPage(btn, page);
                     }
                 }
             }

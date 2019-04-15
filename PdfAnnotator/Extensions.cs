@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using iTextSharp.text;
 
 namespace PdfAnnotator
 {
@@ -23,15 +22,26 @@ namespace PdfAnnotator
             return value;
         }
 
-        public static (float Llx, float Lly, float Urx, float Ury) GetPdfCoords(this Pdf.IWord target)
+        public static (float Llx, float Lly, float Urx, float Ury) GetPdfCoordsIText5(this Pdf.IWord target)
         {
-            var w = target.Parent.Width;
-            var h = target.Parent.Height;
+            var pageWidth = target.Parent.Width;
+            var pageHeight = target.Parent.Height;
             var llx = target.XMin;
-            var lly = h - target.YMax;
+            var lly = pageHeight - target.YMax;
             var urx  = target.XMax;
-            var ury = h - target.YMin;
+            var ury = pageHeight - target.YMin;
             return (llx, lly, urx, ury);
+        }
+
+        public static (float Llx, float Lly, float width, float height) GetPdfCoords(this Pdf.IWord target)
+        {
+            var pageWidth = target.Parent.Width;
+            var pageHeight = target.Parent.Height;
+            var llx = target.XMin;
+            var lly = pageHeight - target.YMax;
+            var width = target.XMax - target.XMin;
+            var height = target.YMax - target.YMin;
+            return (llx, lly, width, height);
         }
     }
 }
