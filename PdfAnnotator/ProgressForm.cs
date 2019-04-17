@@ -48,6 +48,13 @@ namespace PdfAnnotator
             return ShowDialog(owner);
         }
 
+        public DialogResult ShowWhile(string message, Func<Task> task, IWin32Window owner)
+        {
+            _showWhile = task;
+            Report(message);
+            return ShowDialog(owner);
+        }
+
         private async void ProgressForm_Shown(object sender, EventArgs e)
         {
             if (_showWhile == null) return;
