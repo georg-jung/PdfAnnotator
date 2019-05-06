@@ -1,4 +1,4 @@
-﻿namespace PdfAnnotator
+namespace PdfAnnotator
 {
     partial class EditAnnotationForm
     {
@@ -72,6 +72,7 @@
             this.contentTextBox.Location = new System.Drawing.Point(106, 52);
             this.contentTextBox.Multiline = true;
             this.contentTextBox.Name = "contentTextBox";
+            this.contentTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.contentTextBox.Size = new System.Drawing.Size(346, 148);
             this.contentTextBox.TabIndex = 0;
             // 
