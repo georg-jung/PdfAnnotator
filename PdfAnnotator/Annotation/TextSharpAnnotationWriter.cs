@@ -65,6 +65,17 @@ namespace PdfAnnotator.Annotation
                         btn.SetAdditionalAction(PdfName.E, enter);
                         btn.SetAdditionalAction(PdfName.X, exit);
                         acroForm.AddField(btn, page);
+
+                        var underline = PdfTextMarkupAnnotation.CreateUnderline(new Rectangle(buttonRect.GetX(), buttonRect.GetY() - 2, buttonRect.GetWidth(), 3),
+                            new float[]
+                            {
+                                buttonRect.GetX() + buttonRect.GetWidth(), buttonRect.GetY() + buttonRect.GetHeight(),
+                                buttonRect.GetX(), buttonRect.GetY() + buttonRect.GetHeight(),
+                                buttonRect.GetX() + buttonRect.GetWidth(), buttonRect.GetY() - 2,
+                                buttonRect.GetX(), buttonRect.GetY() - 2,
+                            });
+                        underline.SetColor(ColorConstants.YELLOW);
+                        page.AddAnnotation(underline);
                     }
                 }
             }
