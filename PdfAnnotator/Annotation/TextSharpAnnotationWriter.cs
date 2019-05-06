@@ -40,15 +40,10 @@ namespace PdfAnnotator.Annotation
                         var font = PdfFontFactory.CreateRegisteredFont(iText.IO.Font.Constants.StandardFonts.HELVETICA);
                         var coord = trg.GetPdfCoords();
                         var buttonRect = new Rectangle(coord.Llx, coord.Lly, coord.width, coord.height);
-                        var contentWidth = font.GetWidth(ann.Content, FontSize);
-                        var helpWidth = Math.Min(trg.Parent.Width / 2, contentWidth);
-                        var helpHeight = 12 * ((float)Math.Ceiling(contentWidth / helpWidth) + ann.Content.Count(x => x == '\n'));
-                        var targetWidthHalf = coord.width / 2;
-                        var helpWidthHalf = helpWidth / 2;
-                        var helpRect = new Rectangle(coord.Llx + targetWidthHalf - helpWidthHalf - 5, coord.Lly + coord.height + 5, helpWidth + 10, helpHeight + 6);
+                        var txRect = GetAnnotationRect(buttonRect, font, ann, trg);
 
                         var textFieldName = Guid.NewGuid().ToString("n");
-                        var textField = PdfFormField.CreateText(doc, helpRect, textFieldName);
+                        var textField = PdfFormField.CreateText(doc, txRect, textFieldName);
                         textField.SetValue(ann.Content, font, FontSize);
                         textField.SetColor(ColorConstants.DARK_GRAY);
                         textField.SetBackgroundColor(ColorConstants.LIGHT_GRAY);
@@ -74,6 +69,71 @@ namespace PdfAnnotator.Annotation
                 }
             }
             return Task.CompletedTask;
+        }
+
+        private Rectangle GetAnnotationRect(Rectangle buttonRect, PdfFont font, IAnnotation annotation, Pdf.IWord target)
+        {
+            var rectU = GetUpperOrLowerAnnotationRect(buttonRect, font, annotation, target, true);
+            var rect = rectU;
+            if (rectU.GetY() + rectU.GetHeight() > target.Parent.Height)
+            {
+                var rectL = GetUpperOrLowerAnnotationRect(buttonRect, font, annotation, target, false);
+                if (rectL.GetY() + rectL.GetHeight() < target.Parent.Height && rectL.GetY() > 0) rect = rectL;
+            }
+
+            if (rect.GetX() < 5 && rect.GetX() + 5 < target.Parent.Width)
+            {
+                // text is left outside of page but smaller than page plus some margin so move it inside
+                rect.SetX(5);
+            }
+            else
+            {
+                var rectMaxX = rect.GetX() + rect.GetWidth();
+                var delta = rectMaxX + 5 - target.Parent.Width;
+                if (delta > 0 && rect.GetWidth() < target.Parent.Width)
+                {
+                    // text is right outside of page but smaller than page so move it inside
+                    rect.SetX(rect.GetX() - delta);
+                }
+            }
+
+            return rect;
+        }
+
+        private Rectangle GetUpperOrLowerAnnotationRect(Rectangle buttonRect, PdfFont font, IAnnotation annotation, Pdf.IWord target, bool upper = true)
+        {
+            var contentBounds = GetContentBounds(annotation.Content, target.Parent.Width / 2, font);
+
+            var targetWidthHalf = buttonRect.GetWidth() / 2;
+            var helpWidthHalf = contentBounds.width / 2;
+            var annotHeight = contentBounds.height + 6;
+            float annotY;
+            if (upper)
+            {
+                annotY = buttonRect.GetY() + buttonRect.GetHeight() + 5;
+            } else
+            {
+                annotY = buttonRect.GetY() - annotHeight - 10;
+            }
+            var helpRect = new Rectangle(buttonRect.GetX() + targetWidthHalf - helpWidthHalf - 5, annotY, contentBounds.width + 10, annotHeight);
+            return helpRect;
+        }
+
+        private (float height, float width) GetContentBounds(string content, float maxWidth, PdfFont font)
+        {
+            if (string.IsNullOrEmpty(content)) return (0, 0);
+            float height = 0;
+            float width = 1;
+            foreach (var contentLine in content.Split('\n'))
+            {
+                var lineWidth = Math.Max(font.GetWidth(contentLine, FontSize), 1);
+                var visibleContentWidth = Math.Min(maxWidth, lineWidth);
+                var lineHeight = (FontSize + 2) * (float)Math.Ceiling(lineWidth / visibleContentWidth);
+                height += lineHeight;
+                width = Math.Max(width, visibleContentWidth);
+            }
+            
+            return (height, width);
         }
     }
 }
