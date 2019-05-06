@@ -58,8 +58,7 @@ namespace PdfAnnotator.Annotation
                         textField.SetBorderColor(ColorConstants.LIGHT_GRAY);
                         textField.SetFieldFlags(4097);
 
-                        acroForm.AddFieldAppearanceToPage(textField, page);
-
+                        acroForm.AddField(textField, page);
                         
                         var enter = PdfAction.CreateHide(textFieldName, false);
                         var exit = PdfAction.CreateHide(textFieldName, true);
@@ -70,7 +69,7 @@ namespace PdfAnnotator.Annotation
                         btn.SetBorderWidth(0);
                         btn.SetAdditionalAction(PdfName.E, enter);
                         btn.SetAdditionalAction(PdfName.X, exit);
-                        acroForm.AddFieldAppearanceToPage(btn, page);
+                        acroForm.AddField(btn, page);
                     }
                 }
             }
