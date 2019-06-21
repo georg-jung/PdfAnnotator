@@ -1,5 +1,7 @@
 # PdfAnnotator
 
+[![Build status](https://ci.appveyor.com/api/projects/status/mxbveif9plgshai0/branch/master?svg=true)](https://ci.appveyor.com/project/georg-jung/pdfannotator/branch/master)
+
 This software is created as part of Georg Jungs Bachelor's Thesis "Annotate texts with background information while preserving reading flow".
 
 
