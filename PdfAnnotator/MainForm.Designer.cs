@@ -274,7 +274,8 @@
             this.Name = "MainForm";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "PdfAnnotator - Georg Jung";
+            this.Text = "PdfAnnotator {0} - Georg Jung";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.mainMenu.ResumeLayout(false);
             this.mainMenu.PerformLayout();

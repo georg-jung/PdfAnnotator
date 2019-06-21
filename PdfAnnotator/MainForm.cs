@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -332,6 +334,12 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
             {
                 frm.ShowDialog();
             }
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            var fileVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
+            Text = string.Format(Text, fileVersion);
         }
     }
 }
