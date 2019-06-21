@@ -19,5 +19,5 @@ build:
 
 artifacts:
   - path: PdfAnnotator\bin\$(CONFIGURATION)
-    name: pdfannotator-{version}
+    name: pdfannotator
     type: zip
