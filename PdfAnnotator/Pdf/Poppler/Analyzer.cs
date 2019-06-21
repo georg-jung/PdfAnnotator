@@ -12,10 +12,11 @@ namespace PdfAnnotator.Pdf.Poppler
 {
     internal class Analyzer : IAnalyzer
     {
+        internal static string PopplerDownloadUrl { get; } = "https://l.gjung.com/poppler-win";
         private static readonly string PdfToTextArgs = "-bbox";
         private static readonly int PdfToTextTimeout = 60000;
 
-        private static string GetPdfToTextExePath()
+        internal static string GetPdfToTextExePath()
         {
             // see https://stackoverflow.com/questions/837488/how-can-i-get-the-applications-path-in-a-net-console-application
             var dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) ?? throw new InvalidOperationException("Could not determine assembly's path.");
@@ -25,6 +26,7 @@ namespace PdfAnnotator.Pdf.Poppler
         public async Task<IAnalysis> AnalyzeAsync(string pdfPath, IProgress<int> pageProgress = null, CancellationToken ct = default)
         {
             var p2t = GetPdfToTextExePath();
+            if (!File.Exists(p2t)) throw new PopplerNotFoundException($"The file {p2t} was not found. This application needs poppler to work properly. Please download poppler and extract it at the given location. You may download poppler at {PopplerDownloadUrl}.", p2t);
             var output = System.IO.Path.GetTempFileName();
             var arg = $"{PdfToTextArgs} \"{pdfPath}\" \"{output}\"";
             var res = await ProcessAsyncHelper.RunProcessAsync(p2t, arg, PdfToTextTimeout).ConfigureAwait(false);
@@ -113,6 +115,22 @@ namespace PdfAnnotator.Pdf.Poppler
                 }
                 throw new ArgumentException("Given html is not valid. Maybe the closing </doc> tag is missing?");
             }
+        }
+
+        // https://stackoverflow.com/questions/2200241/in-c-sharp-how-do-i-define-my-own-exceptions
+        // inherit from specific exception class or System.Exception, not System.ApplicationException
+        [Serializable]
+        protected class PopplerNotFoundException : FileNotFoundException
+        {
+            public PopplerNotFoundException() { }
+
+            public PopplerNotFoundException(string message) : base(message) { }
+
+            public PopplerNotFoundException(string message, Exception innerException) : base(message, innerException) { }
+
+            public PopplerNotFoundException(string message, string fileName) : base(message, fileName) { }
+
+            public PopplerNotFoundException(string message, string fileName, Exception innerException) : base(message, fileName, innerException) { }
         }
     }
 }
