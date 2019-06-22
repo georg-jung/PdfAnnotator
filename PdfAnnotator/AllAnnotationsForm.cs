@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using PdfAnnotator.Persistence;
 using PdfAnnotator.Persistence.Model;
+using MoreLinq;
 
 namespace PdfAnnotator
 {
@@ -17,11 +18,13 @@ namespace PdfAnnotator
     {
         private readonly EditContext _context;
         private List<WordAnnotation> _annotations;
+        private readonly HashSet<string> _wordsInDoc = new HashSet<string>();
 
         internal AllAnnotationsForm(EditContext context)
         {
             InitializeComponent();
             _context = context;
+            if (context != null && context.Words != null) context.Words.ForEach(w => _wordsInDoc.Add(w.Text.ToLower()));
         }
 
         private void AllAnnotationsForm_Load(object sender, EventArgs e)
@@ -40,6 +43,16 @@ namespace PdfAnnotator
                 item.SubItems.Add(a.Content);
                 var fileName = Path.GetFileName(a.Document.Path);
                 item.SubItems.Add(fileName);
+                item.Tag = a;
+                if (_wordsInDoc.Contains(a.Word.ToLower()))
+                {
+                    item.BackColor = Color.LightGreen;
+                    item.SubItems.Add("Yes");
+                }
+                else
+                {
+                    item.SubItems.Add("No");
+                }
             }
             annotationsListView.EndUpdate();
         }

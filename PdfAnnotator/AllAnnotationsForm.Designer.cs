@@ -1,4 +1,4 @@
-﻿namespace PdfAnnotator
+namespace PdfAnnotator
 {
     partial class AllAnnotationsForm
     {
@@ -32,9 +32,10 @@
             this.annotationsListView = new System.Windows.Forms.ListView();
             this.annotationSubjectWordHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contentHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.documentHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.annotationControlsPanel = new System.Windows.Forms.Panel();
             this.takeAnnotationButton = new System.Windows.Forms.Button();
-            this.documentHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.inCurrentPdfHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.annotationsGroupBox.SuspendLayout();
             this.annotationControlsPanel.SuspendLayout();
             this.SuspendLayout();
@@ -58,7 +59,8 @@
             this.annotationsListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.annotationSubjectWordHeader,
             this.contentHeader,
-            this.documentHeader});
+            this.documentHeader,
+            this.inCurrentPdfHeader});
             this.annotationsListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.annotationsListView.FullRowSelect = true;
             this.annotationsListView.GridLines = true;
@@ -80,6 +82,11 @@
             this.contentHeader.Text = "Content";
             this.contentHeader.Width = 450;
             // 
+            // documentHeader
+            // 
+            this.documentHeader.Text = "PDF";
+            this.documentHeader.Width = 120;
+            // 
             // annotationControlsPanel
             // 
             this.annotationControlsPanel.Controls.Add(this.takeAnnotationButton);
@@ -98,10 +105,9 @@
             this.takeAnnotationButton.Text = "Take";
             this.takeAnnotationButton.UseVisualStyleBackColor = true;
             // 
-            // documentHeader
+            // inCurrentPdfHeader
             // 
-            this.documentHeader.Text = "PDF";
-            this.documentHeader.Width = 150;
+            this.inCurrentPdfHeader.Text = "Relevant";
             // 
             // AllAnnotationsForm
             // 
@@ -130,5 +136,6 @@
         private System.Windows.Forms.ColumnHeader documentHeader;
         private System.Windows.Forms.Panel annotationControlsPanel;
         private System.Windows.Forms.Button takeAnnotationButton;
+        private System.Windows.Forms.ColumnHeader inCurrentPdfHeader;
     }
 }
