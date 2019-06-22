@@ -24,8 +24,7 @@ namespace PdfAnnotator
     public partial class MainForm : Form
     {
         private EditContext _ctx;
-        private bool _unsaved = false;
-
+        
         public MainForm()
         {
             InitializeComponent();
@@ -115,7 +114,7 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
 
         private bool ShouldOpenFile()
         {
-            if (_unsaved && _ctx != null)
+            if (_ctx?.Unsaved == true)
             {
                 if (MessageBox.Show("If you open a new file, unsaved changes will be lost. Do you want to continue?",
                         "Unsaved changes", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return false;
@@ -170,7 +169,7 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
             if (_ctx.Annotations.TryGetValue(word, out annot))
             {
                 if (EditAnnotation(annot) != DialogResult.OK) return;
-                _unsaved = true;
+                _ctx.Unsaved = true;
                 RefreshAnnotationsList();
                 SaveToDb();
                 return;
@@ -179,16 +178,14 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
             annot = new Annotation.Annotation(word);
 
             if (EditAnnotation(annot) != DialogResult.OK) return;
-            _unsaved = true;
             AddAnnotation(word, annot);
+            _ctx.Unsaved = true;
             SaveToDb();
         }
 
         private void SaveToDb()
         {
-            var toSave = _ctx.Annotations.Values.Select(a => new WordAnnotation() { Content = a.Content, Word = a.Subject.Text });
-            Annotations.SaveAnnotations(_ctx.OpenFile, toSave);
-            _unsaved = false;
+            _ctx.SaveToDb();
             LoadLruList();
         }
 
@@ -220,7 +217,7 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
             }
 
             if (EditAnnotation(annot) != DialogResult.OK) return;
-            _unsaved = true;
+            _ctx.Unsaved = true;
             focused.SubItems[1].Text = annot.Content;
             SaveToDb();
         }
@@ -246,7 +243,7 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
             var item = _ctx.Annotations.First(kvp => kvp.Value == annotation);
             _ctx.Annotations.Remove(item.Key);
 
-            _unsaved = true;
+            _ctx.Unsaved = true;
             SaveToDb();
         }
 
@@ -280,7 +277,7 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
                 var writer = new TextSharpAnnotationWriter();
                 await writer.WriteAnnotatedPdfAsync(_ctx.OpenFile.Path, _ctx.Annotations.Values, sfd.FileName).ConfigureAwait(false);
 
-                _unsaved = false;
+                _ctx.Unsaved = false;
             }
         }
 
@@ -332,6 +329,7 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
             using (var frm = new AllAnnotationsForm(_ctx))
             {
                 frm.ShowDialog();
+                if (frm.DidChangesToAnnotationsInContext) RefreshAnnotationsList();
             }
         }
 

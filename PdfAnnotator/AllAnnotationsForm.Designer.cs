@@ -1,4 +1,4 @@
-namespace PdfAnnotator
+﻿namespace PdfAnnotator
 {
     partial class AllAnnotationsForm
     {
@@ -104,6 +104,7 @@ namespace PdfAnnotator
             this.takeAnnotationButton.TabIndex = 0;
             this.takeAnnotationButton.Text = "Take";
             this.takeAnnotationButton.UseVisualStyleBackColor = true;
+            this.takeAnnotationButton.Click += new System.EventHandler(this.takeAnnotationButton_Click);
             // 
             // inCurrentPdfHeader
             // 

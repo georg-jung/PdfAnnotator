@@ -1,4 +1,5 @@
 ﻿using PdfAnnotator.Pdf;
+using PdfAnnotator.Persistence.Model;
 using PdfAnnotator.Words;
 using System;
 using System.Collections.Generic;
@@ -19,5 +20,13 @@ namespace PdfAnnotator
         public IReadOnlyList<IWord> Words { get; set; }
         public Dictionary<IWord, Annotation.Annotation> Annotations { get; set; }
         public PdfFile OpenFile { get; }
+        public bool Unsaved { get; set; } = false;
+
+        public void SaveToDb()
+        {
+            var toSave = Annotations.Values.Select(a => new WordAnnotation() { Content = a.Content, Word = a.Subject.Text });
+            Persistence.Annotations.SaveAnnotations(OpenFile, toSave);
+            Unsaved = false;
+        }
     }
 }

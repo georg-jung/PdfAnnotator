@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -16,6 +16,7 @@ namespace PdfAnnotator
 {
     public partial class AllAnnotationsForm : Form
     {
+        public bool DidChangesToAnnotationsInContext { get; private set; }
         private readonly EditContext _context;
         private List<WordAnnotation> _annotations;
         private readonly HashSet<string> _wordsInDoc = new HashSet<string>();
@@ -24,7 +25,9 @@ namespace PdfAnnotator
         {
             InitializeComponent();
             _context = context;
-            if (context != null && context.Words != null) context.Words.ForEach(w => _wordsInDoc.Add(w.Text.ToLower()));
+            var wordsInContext = context != null && context.Words != null;
+            if (wordsInContext) context.Words.ForEach(w => _wordsInDoc.Add(w.Text.ToLower()));
+            takeAnnotationButton.Enabled = wordsInContext;
         }
 
         private void AllAnnotationsForm_Load(object sender, EventArgs e)
@@ -55,6 +58,41 @@ namespace PdfAnnotator
                 }
             }
             annotationsListView.EndUpdate();
+        }
+
+        private void takeAnnotationButton_Click(object sender, EventArgs e)
+        {
+            if (_context == null) return;
+            var focused = annotationsListView.FocusedItem;
+            if (focused?.Selected != true || !(focused.Tag is WordAnnotation annotation))
+            {
+                MessageBox.Show("Please select an annotation word first.", "No annotation selected", MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            var wrd = _context.Words.FirstOrDefault(x => x.Text.ToLower() == annotation.Word.ToLower());
+            if (wrd == null)
+            {
+                MessageBox.Show($"The word {annotation.Word} is not part of the current document.", "Word not part of document", MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            if (_context.Annotations.TryGetValue(wrd, out var ann))
+            {
+                if (annotation.Content == ann.Content) return;
+                if (MessageBox.Show($"The word {wrd.Text} is already annotated: \n\n{ann.Content}\n\nDo you want to overwrite the existing annotation?", "Overwrite existing annotation", MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question) == DialogResult.No) return;
+                ann.Content = annotation.Content;
+            }
+            else
+            {
+                ann = new Annotation.Annotation(wrd) { Content = annotation.Content };
+                _context.Annotations.Add(wrd, ann);
+            }
+            _context.SaveToDb();
+            DidChangesToAnnotationsInContext = true;
         }
     }
 }
