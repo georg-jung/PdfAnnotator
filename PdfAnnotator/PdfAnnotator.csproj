@@ -109,6 +109,7 @@
     <Compile Include="EditAnnotationForm.Designer.cs">
       <DependentUpon>EditAnnotationForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="EditContext.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Persistence\Annotations.cs" />
     <Compile Include="Persistence\Model\WordAnnotation.cs" />

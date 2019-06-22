@@ -23,9 +23,7 @@ namespace PdfAnnotator
 {
     public partial class MainForm : Form
     {
-        private IReadOnlyList<IWord> _words;
-        private Dictionary<IWord, Annotation.Annotation> _annotations;
-        private PdfFile _openFile;
+        private EditContext _ctx;
         private bool _unsaved = false;
 
         public MainForm()
@@ -37,12 +35,12 @@ namespace PdfAnnotator
         {
             using (var prgForm = new ProgressForm())
             {
-                _openFile = new PdfFile { Path = path };
-
+                _ctx = new EditContext(new PdfFile { Path = path });
+                
                 IReadOnlyList<IWord> words = null;
                 prgForm.ShowWhile(async () =>
                 {
-                    var md5Task = Task.Run(() => _openFile.ComputeMd5());
+                    var md5Task = Task.Run(() => _ctx.OpenFile.ComputeMd5());
                     prgForm.Report("Extracting words...");
                     var analyzePageProgress = new Progress<int>(pg =>
                     {
@@ -50,7 +48,7 @@ namespace PdfAnnotator
                     });
 
                     var analyzer = new Analyzer();
-                    var analysis = await analyzer.AnalyzeAsync(_openFile.Path, analyzePageProgress).ConfigureAwait(true);
+                    var analysis = await analyzer.AnalyzeAsync(_ctx.OpenFile.Path, analyzePageProgress).ConfigureAwait(true);
                     await md5Task.ConfigureAwait(true);
 
                     prgForm.Report("Document loaded. Analyzing words...");
@@ -58,7 +56,7 @@ namespace PdfAnnotator
                     words = await we.ExtractAsync(analysis).ConfigureAwait(true);
                 }, this);
                 ListWordsInOpenDocument(words);
-                _annotations = new Dictionary<IWord, Annotation.Annotation>();
+                _ctx.Annotations = new Dictionary<IWord, Annotation.Annotation>();
                 annotationsListView.Items.Clear();
             }
             LoadSavedAnnotationsForOpenFile();
@@ -78,15 +76,15 @@ namespace PdfAnnotator
             }
             wordsView.EndUpdate();
 
-            _words = words;
+            _ctx.Words = words;
         }
 
         private void LoadSavedAnnotationsForOpenFile()
         {
-            var saved = Annotations.GetAnnotations(_openFile.Md5);
+            var saved = Annotations.GetAnnotations(_ctx.OpenFile.Md5);
             if (saved == null)
             {
-                var found = Annotations.GetAnnotationsByPath(_openFile.Path);
+                var found = Annotations.GetAnnotationsByPath(_ctx.OpenFile.Path);
                 if (found.Item1 == null || found.Item2 == null)
                     return;
                 var oldPdf = found.Item1;
@@ -101,7 +99,7 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
             var added = 0;
             foreach (var a in saved)
             {
-                var wrd = _words.FirstOrDefault(w => w.Text == a.Word);
+                var wrd = _ctx.Words.FirstOrDefault(w => w.Text == a.Word);
                 if (wrd == null) continue;
                 AddAnnotation(wrd, a.Content);
                 added++;
@@ -117,7 +115,7 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
 
         private bool ShouldOpenFile()
         {
-            if (_unsaved && _openFile != null)
+            if (_unsaved && _ctx != null)
             {
                 if (MessageBox.Show("If you open a new file, unsaved changes will be lost. Do you want to continue?",
                         "Unsaved changes", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return false;
@@ -143,7 +141,7 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
         {
             annotationsListView.BeginUpdate();
             annotationsListView.Items.Clear();
-            foreach (var annot in _annotations.Values)
+            foreach (var annot in _ctx.Annotations.Values)
             {
                 var lvi = new ListViewItem { Text = annot.Subject.Text, Tag = annot };
                 lvi.SubItems.Add(annot.Content);
@@ -169,11 +167,12 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
             }
 
             Annotation.Annotation annot;
-            if (_annotations.TryGetValue(word, out annot))
+            if (_ctx.Annotations.TryGetValue(word, out annot))
             {
                 if (EditAnnotation(annot) != DialogResult.OK) return;
                 _unsaved = true;
                 RefreshAnnotationsList();
+                SaveToDb();
                 return;
             }
 
@@ -187,8 +186,8 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
 
         private void SaveToDb()
         {
-            var toSave = _annotations.Values.Select(a => new WordAnnotation() { Content = a.Content, Word = a.Subject.Text });
-            Annotations.SaveAnnotations(_openFile, toSave);
+            var toSave = _ctx.Annotations.Values.Select(a => new WordAnnotation() { Content = a.Content, Word = a.Subject.Text });
+            Annotations.SaveAnnotations(_ctx.OpenFile, toSave);
             _unsaved = false;
             LoadLruList();
         }
@@ -202,7 +201,7 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
 
         private void AddAnnotation(IWord word, Annotation.Annotation value)
         {
-            _annotations.Add(word, value);
+            _ctx.Annotations.Add(word, value);
 
             var lvi = new ListViewItem { Text = word.Text, Tag = value };
             lvi.SubItems.Add(value.Content);
@@ -244,8 +243,8 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
         private void DeleteAnnotation(Annotation.Annotation annotation)
         {
             // each annotation will only be in the dict once
-            var item = _annotations.First(kvp => kvp.Value == annotation);
-            _annotations.Remove(item.Key);
+            var item = _ctx.Annotations.First(kvp => kvp.Value == annotation);
+            _ctx.Annotations.Remove(item.Key);
 
             _unsaved = true;
             SaveToDb();
@@ -267,7 +266,7 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
 
         private async void createPdfMenuItem_Click(object sender, EventArgs e)
         {
-            if (_openFile == null)
+            if (_ctx == null)
             {
                 MessageBox.Show("You didn't add any annotation. Please start working on a document before saving.",
                         "Nothing changed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -279,7 +278,7 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
                 if (sfd.ShowDialog() != DialogResult.OK) return;
 
                 var writer = new TextSharpAnnotationWriter();
-                await writer.WriteAnnotatedPdfAsync(_openFile.Path, _annotations.Values, sfd.FileName).ConfigureAwait(false);
+                await writer.WriteAnnotatedPdfAsync(_ctx.OpenFile.Path, _ctx.Annotations.Values, sfd.FileName).ConfigureAwait(false);
 
                 _unsaved = false;
             }
@@ -330,7 +329,7 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
 
         private void allAnnotationsMenuItem_Click(object sender, EventArgs e)
         {
-            using (var frm = new AllAnnotationsForm())
+            using (var frm = new AllAnnotationsForm(_ctx))
             {
                 frm.ShowDialog();
             }

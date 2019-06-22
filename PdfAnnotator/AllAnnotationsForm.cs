@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -15,11 +15,13 @@ namespace PdfAnnotator
 {
     public partial class AllAnnotationsForm : Form
     {
+        private readonly EditContext _context;
         private List<WordAnnotation> _annotations;
 
-        public AllAnnotationsForm()
+        internal AllAnnotationsForm(EditContext context)
         {
             InitializeComponent();
+            _context = context;
         }
 
         private void AllAnnotationsForm_Load(object sender, EventArgs e)
