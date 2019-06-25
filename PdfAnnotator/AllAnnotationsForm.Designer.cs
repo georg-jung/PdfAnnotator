@@ -33,9 +33,10 @@
             this.annotationSubjectWordHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contentHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.documentHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.inCurrentPdfHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.annotationControlsPanel = new System.Windows.Forms.Panel();
             this.takeAnnotationButton = new System.Windows.Forms.Button();
-            this.inCurrentPdfHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.copyAnnotationContentButton = new System.Windows.Forms.Button();
             this.annotationsGroupBox.SuspendLayout();
             this.annotationControlsPanel.SuspendLayout();
             this.SuspendLayout();
@@ -87,8 +88,13 @@
             this.documentHeader.Text = "PDF";
             this.documentHeader.Width = 120;
             // 
+            // inCurrentPdfHeader
+            // 
+            this.inCurrentPdfHeader.Text = "Relevant";
+            // 
             // annotationControlsPanel
             // 
+            this.annotationControlsPanel.Controls.Add(this.copyAnnotationContentButton);
             this.annotationControlsPanel.Controls.Add(this.takeAnnotationButton);
             this.annotationControlsPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.annotationControlsPanel.Location = new System.Drawing.Point(6, 408);
@@ -100,15 +106,21 @@
             // 
             this.takeAnnotationButton.Location = new System.Drawing.Point(9, 6);
             this.takeAnnotationButton.Name = "takeAnnotationButton";
-            this.takeAnnotationButton.Size = new System.Drawing.Size(75, 23);
+            this.takeAnnotationButton.Size = new System.Drawing.Size(100, 23);
             this.takeAnnotationButton.TabIndex = 0;
             this.takeAnnotationButton.Text = "Take";
             this.takeAnnotationButton.UseVisualStyleBackColor = true;
             this.takeAnnotationButton.Click += new System.EventHandler(this.takeAnnotationButton_Click);
             // 
-            // inCurrentPdfHeader
+            // copyAnnotationContentButton
             // 
-            this.inCurrentPdfHeader.Text = "Relevant";
+            this.copyAnnotationContentButton.Location = new System.Drawing.Point(115, 6);
+            this.copyAnnotationContentButton.Name = "copyAnnotationContentButton";
+            this.copyAnnotationContentButton.Size = new System.Drawing.Size(100, 23);
+            this.copyAnnotationContentButton.TabIndex = 1;
+            this.copyAnnotationContentButton.Text = "Copy Content";
+            this.copyAnnotationContentButton.UseVisualStyleBackColor = true;
+            this.copyAnnotationContentButton.Click += new System.EventHandler(this.CopyAnnotationContentButton_Click);
             // 
             // AllAnnotationsForm
             // 
@@ -138,5 +150,6 @@
         private System.Windows.Forms.Panel annotationControlsPanel;
         private System.Windows.Forms.Button takeAnnotationButton;
         private System.Windows.Forms.ColumnHeader inCurrentPdfHeader;
+        private System.Windows.Forms.Button copyAnnotationContentButton;
     }
 }

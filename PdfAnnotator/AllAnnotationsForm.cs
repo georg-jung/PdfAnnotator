@@ -94,5 +94,19 @@ namespace PdfAnnotator
             _context.SaveToDb();
             DidChangesToAnnotationsInContext = true;
         }
+
+        private void CopyAnnotationContentButton_Click(object sender, EventArgs e)
+        {
+            if (_context == null) return;
+            var focused = annotationsListView.FocusedItem;
+            if (focused?.Selected != true || !(focused.Tag is WordAnnotation annotation))
+            {
+                MessageBox.Show("Please select an annotation word first.", "No annotation selected", MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            System.Windows.Forms.Clipboard.SetText(annotation.Content);
+        }
     }
 }
