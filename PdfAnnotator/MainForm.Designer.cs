@@ -48,6 +48,10 @@
             this.autoSaveInfoLabel = new System.Windows.Forms.Label();
             this.deleteAnnotationButton = new System.Windows.Forms.Button();
             this.editAnnotationButton = new System.Windows.Forms.Button();
+            this.toolsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportDatabaseToolsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importFromExistingDatabaseToolsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.restoreDatabseToolsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenu.SuspendLayout();
             this.candidatesGroupBox.SuspendLayout();
             this.candidateControlsHeader.SuspendLayout();
@@ -65,7 +69,8 @@
             this.openPdfMenuItem,
             this.openLruPdfMenuItem,
             this.allAnnotationsMenuItem,
-            this.createPdfMenuItem});
+            this.createPdfMenuItem,
+            this.toolsMenuItem});
             this.mainMenu.Location = new System.Drawing.Point(0, 0);
             this.mainMenu.Name = "mainMenu";
             this.mainMenu.ShowItemToolTips = true;
@@ -263,6 +268,37 @@
             this.editAnnotationButton.UseVisualStyleBackColor = true;
             this.editAnnotationButton.Click += new System.EventHandler(this.editAnnotationButton_Click);
             // 
+            // toolsMenuItem
+            // 
+            this.toolsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exportDatabaseToolsMenuItem,
+            this.importFromExistingDatabaseToolsMenuItem,
+            this.restoreDatabseToolsMenuItem});
+            this.toolsMenuItem.Name = "toolsMenuItem";
+            this.toolsMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.toolsMenuItem.Text = "Tools";
+            // 
+            // exportDatabaseToolsMenuItem
+            // 
+            this.exportDatabaseToolsMenuItem.Name = "exportDatabaseToolsMenuItem";
+            this.exportDatabaseToolsMenuItem.Size = new System.Drawing.Size(233, 22);
+            this.exportDatabaseToolsMenuItem.Text = "Export Database";
+            this.exportDatabaseToolsMenuItem.Click += new System.EventHandler(this.ExportDatabaseToolsMenuItem_Click);
+            // 
+            // importFromExistingDatabaseToolsMenuItem
+            // 
+            this.importFromExistingDatabaseToolsMenuItem.Name = "importFromExistingDatabaseToolsMenuItem";
+            this.importFromExistingDatabaseToolsMenuItem.Size = new System.Drawing.Size(233, 22);
+            this.importFromExistingDatabaseToolsMenuItem.Text = "Import from existing Database";
+            this.importFromExistingDatabaseToolsMenuItem.Click += new System.EventHandler(this.ImportFromExistingDatabaseToolsMenuItem_Click);
+            // 
+            // restoreDatabseToolsMenuItem
+            // 
+            this.restoreDatabseToolsMenuItem.Name = "restoreDatabseToolsMenuItem";
+            this.restoreDatabseToolsMenuItem.Size = new System.Drawing.Size(233, 22);
+            this.restoreDatabseToolsMenuItem.Text = "Restore Database";
+            this.restoreDatabseToolsMenuItem.Click += new System.EventHandler(this.RestoreDatabseToolsMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -315,6 +351,10 @@
         private System.Windows.Forms.Label autoSaveInfoLabel;
         private System.Windows.Forms.ToolStripMenuItem openLruPdfMenuItem;
         private System.Windows.Forms.ToolStripMenuItem allAnnotationsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportDatabaseToolsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importFromExistingDatabaseToolsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem restoreDatabseToolsMenuItem;
     }
 }
 

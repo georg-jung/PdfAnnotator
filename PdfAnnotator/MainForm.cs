@@ -24,18 +24,26 @@ namespace PdfAnnotator
     public partial class MainForm : Form
     {
         private EditContext _ctx;
-        
+
         public MainForm()
         {
             InitializeComponent();
         }
 
+        private void ClearContextAndUi()
+        {
+            _ctx = null;
+            wordsView.Items.Clear();
+            annotationsListView.Items.Clear();
+        }
+
         private void OpenPdf(string path)
         {
+            ClearContextAndUi();
             using (var prgForm = new ProgressForm())
             {
                 _ctx = new EditContext(new PdfFile { Path = path });
-                
+
                 IReadOnlyList<IWord> words = null;
                 prgForm.ShowWhile(async () =>
                 {
@@ -318,7 +326,7 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
             if (!ShouldOpenFile()) return;
             OpenPdf(path);
         }
-        
+
         private void MainForm_Shown(object sender, EventArgs e)
         {
             LoadLruList();
@@ -337,6 +345,50 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
         {
             var fileVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
             Text = string.Format(Text, fileVersion);
+        }
+
+        private void ExportDatabaseToolsMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "PdfAnnotator databases (*.pdfannotatordb)|*.pdfannotatordb";
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    Database.Export(sfd.FileName);
+                    MessageBox.Show(this, $"A copy of your local database was successfully saved to {sfd.FileName}. You can use it as a backup, replace another users database with it using the \"Restore Database\" function or import it's contents into another database.", "Database Export Successfull", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
+        private void ImportFromExistingDatabaseToolsMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Database.Exists())
+                MessageBox.Show(this, $"This functionality adds information from an existing database you may choose next. Please note that it only imports information on files that your local database has never seen before. If you want to overwrite annotations for documents you worked on before, delete the documents from your database first.", "Import Data from Existing Database", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "PdfAnnotator databases (*.pdfannotatordb)|*.pdfannotatordb";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    ClearContextAndUi();
+                    var stats = Annotations.ImportUnseenPdfs(ofd.FileName);
+                    MessageBox.Show(this, $"Success. Imported {stats.annotationCount} annotations for {stats.pdfCount} documents.", "Import Data from Existing Database", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
+        private void RestoreDatabseToolsMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Database.Exists() && MessageBox.Show(this, $"This functionality replaces your existing database with another one you can choose next. This means all your existing work saved in your local database will be lost. Are you sure you want to proceed?", "Restore Database - Potential Loss of Data", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) != DialogResult.Yes)
+                return;
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "PdfAnnotator databases (*.pdfannotatordb)|*.pdfannotatordb";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    ClearContextAndUi();
+                    Database.Restore(ofd.FileName);
+                }
+            }
         }
     }
 }

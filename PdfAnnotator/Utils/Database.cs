@@ -14,9 +14,10 @@ namespace PdfAnnotator.Utils
 {
     internal static class Database
     {
+        private const int NewestDbUserVersion = 1;
         // don't use expression body; DbPath should not change during one AppDomain lifetime
         private static string DbPath { get; } = Environment.ExpandEnvironmentVariables(Properties.Settings.Default.DBPath);
-        
+
         static Database()
         {
             EnsureParentDirectoryExists();
@@ -29,10 +30,14 @@ namespace PdfAnnotator.Utils
             Directory.CreateDirectory(folder);
         }
 
-        
         private static LiteDatabase OpenDatabase()
         {
-            var db = new LiteDatabase(DbPath, null, new Logger(Logger.FULL));
+            return OpenDatabase(DbPath);
+        }
+
+        private static LiteDatabase OpenDatabase(string dbPath)
+        {
+            var db = new LiteDatabase(dbPath, null, new Logger(Logger.FULL));
             var engine = db.Engine;
             if (engine.UserVersion == 0)
             {
@@ -47,15 +52,45 @@ namespace PdfAnnotator.Utils
                 annotation.EnsureIndex(x => x.Word);
                 engine.UserVersion = 1;
             }
+            if (engine.UserVersion != NewestDbUserVersion) throw new InvalidOperationException($"Version of {dbPath} is {engine.UserVersion} but should be {NewestDbUserVersion}. None of the available migrations was able to produce this version either.");
 #if DEBUG
             db.Log.Logging += (s) => Debug.WriteLine(s);
 #endif
             return db;
         }
 
+        private static LiteDatabase OpenDatabaseReadonly(string dbPath)
+        {
+            var db = new LiteDatabase($"Filename={dbPath}; Mode=ReadOnly");
+            var engine = db.Engine;
+            if (engine.UserVersion != NewestDbUserVersion) throw new InvalidOperationException($"Version of {dbPath} is {engine.UserVersion} but should be {NewestDbUserVersion}. Other versions than {NewestDbUserVersion} can not be opened in readonly mode.");
+            return db;
+        }
+
         public static LiteRepository GetRepository()
         {
             return new LiteRepository(OpenDatabase(), true);
+        }
+
+        public static LiteRepository GetReadOnlyRepository(string databasePath)
+        {
+            return new LiteRepository(OpenDatabaseReadonly(databasePath), true);
+        }
+
+        public static bool Exists()
+        {
+            return File.Exists(DbPath);
+        }
+
+        public static void Export(string targetPath)
+        {
+            File.Copy(DbPath, targetPath);
+        }
+
+        public static void Restore(string sourcePath, bool keepBackupOfExisting = true)
+        {
+            if (keepBackupOfExisting && Exists()) File.Move(DbPath, $"{DbPath}_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.bak");
+            File.Copy(sourcePath, DbPath, true);
         }
     }
 }

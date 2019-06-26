@@ -26,6 +26,11 @@ namespace PdfAnnotator.Persistence
             return repo.Fetch<PdfFile>(p => p.Path == lPath);
         }
 
+        private static List<PdfFile> GetPdfs(this LiteRepository repo)
+        {
+            return repo.Query<PdfFile>().ToList();
+        }
+
         public static List<WordAnnotation> GetAnnotations(bool includeDocuments, int? maxCount = null)
         {
             using (var repo = Database.GetRepository())
@@ -37,13 +42,18 @@ namespace PdfAnnotator.Persistence
             }
         }
 
+        private static List<WordAnnotation> GetAnnotations(this LiteRepository repo, string contentMd5)
+        {
+            var pdf = repo.GetPdf(contentMd5);
+            if (pdf == null) return null;
+            return repo.Fetch<WordAnnotation>(wa => wa.Document.Id == pdf.Id);
+        }
+
         public static List<WordAnnotation> GetAnnotations(string contentMd5)
         {
             using (var repo = Database.GetRepository())
             {
-                var pdf = repo.GetPdf(contentMd5);
-                if (pdf == null) return null;
-                return repo.Fetch<WordAnnotation>(wa => wa.Document.Id == pdf.Id);
+                return repo.GetAnnotations(contentMd5);
             }
         }
 
@@ -69,31 +79,42 @@ namespace PdfAnnotator.Persistence
             }
         }
 
+        private static void EnsurePdfFile(this LiteRepository repo, PdfFile value, bool updateLastSeen = true)
+        {
+            var pdf = repo.GetPdf(value.Md5);
+            if (pdf == null)
+                value.Id = (Guid)repo.Insert<PdfFile>(value);
+            else
+                value.Id = pdf.Id;
+            if (updateLastSeen)
+                value.LastSeen = DateTime.Now;
+            repo.Update(value);
+        }
+
         public static void EnsurePdfFile(PdfFile value)
         {
             using (var repo = Database.GetRepository())
             {
-                var pdf = repo.GetPdf(value.Md5);
-                if (pdf == null)
-                    value.Id = (Guid)repo.Insert<PdfFile>(value);
-                else
-                    value.Id = pdf.Id;
-                value.LastSeen = DateTime.Now;
-                repo.Update(value);
+                EnsurePdfFile(repo, value);
             }
+        }
+
+        private static void SaveAnnotations(this LiteRepository repo, PdfFile document, IEnumerable<WordAnnotation> annotations, bool updatePdfLastSeen = true)
+        {
+            repo.EnsurePdfFile(document, updatePdfLastSeen);
+            repo.Delete<WordAnnotation>(wa => wa.Document.Id == document.Id);
+            repo.Insert<WordAnnotation>(annotations.Select(a =>
+            {
+                a.Document = document;
+                return a;
+            }));
         }
 
         public static void SaveAnnotations(PdfFile document, IEnumerable<WordAnnotation> annotations)
         {
             using (var repo = Database.GetRepository())
             {
-                EnsurePdfFile(document);
-                repo.Delete<WordAnnotation>(wa => wa.Document.Id == document.Id);
-                repo.Insert<WordAnnotation>(annotations.Select(a =>
-                {
-                    a.Document = document;
-                    return a;
-                }));
+                repo.SaveAnnotations(document, annotations);
             }
         }
 
@@ -103,6 +124,25 @@ namespace PdfAnnotator.Persistence
             {
                 return repo.Query<PdfFile>().Where(Query.All(nameof(PdfFile.LastSeen), Query.Descending)).Limit(maxCount).ToList();
             }
+        }
+
+        public static (int pdfCount, int annotationCount) ImportUnseenPdfs(string sourcePath)
+        {
+            int pdfCnt = 0;
+            int annotCnt = 0;
+            using (var repo = Database.GetRepository())
+            using (var toImport = Database.GetReadOnlyRepository(sourcePath))
+            {
+                foreach (var pdf in toImport.GetPdfs())
+                {
+                    if (repo.GetPdf(pdf.Md5) != null) continue;
+                    var annots = toImport.GetAnnotations(pdf.Md5);
+                    repo.SaveAnnotations(pdf, annots, false);
+                    annotCnt += annots.Count;
+                    ++pdfCnt;
+                }
+            }
+            return (pdfCnt, annotCnt);
         }
     }
 }
