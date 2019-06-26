@@ -47,7 +47,9 @@ namespace PdfAnnotator.Utils
                 annotation.EnsureIndex(x => x.Word);
                 engine.UserVersion = 1;
             }
+#if DEBUG
             db.Log.Logging += (s) => Debug.WriteLine(s);
+#endif
             return db;
         }
 
