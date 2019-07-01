@@ -28,11 +28,20 @@ namespace PdfAnnotator
             var wordsInContext = context != null && context.Words != null;
             if (wordsInContext) context.Words.ForEach(w => _wordsInDoc.Add(w.Text.ToLower()));
             takeAnnotationButton.Enabled = wordsInContext;
+            takeAllRelevantAnnotationsButton.Enabled = wordsInContext;
+        }
+
+        internal AllAnnotationsForm(EditContext context, List<WordAnnotation> annotationsToShow) : this(context)
+        {
+            _annotations = annotationsToShow;
         }
 
         private void AllAnnotationsForm_Load(object sender, EventArgs e)
         {
-            _annotations = Annotations.GetAnnotations(true);
+            if (_annotations == null)
+            {
+                _annotations = Annotations.GetAnnotations(true);
+            }
             RefreshAnnotationList();
         }
 
@@ -107,6 +116,37 @@ namespace PdfAnnotator
             }
 
             System.Windows.Forms.Clipboard.SetText(annotation.Content);
+        }
+
+        private void TakeAllRelevantAnnotationsButton_Click(object sender, EventArgs e)
+        {
+            var added = 0;
+            var skipped = 0;
+            // get relevant words using hashset in O(n*1)
+            var rels = _annotations.Where(a => _wordsInDoc.Contains(a.Word.ToLower()));
+            foreach (var rel in rels)
+            {
+                var wrd = _context.Words.FirstOrDefault(x => x.Text.ToLower() == rel.Word.ToLower());
+                if (!_context.Annotations.TryGetValue(wrd, out var ann))
+                {
+                    ann = new Annotation.Annotation(wrd) { Content = rel.Content };
+                    _context.Annotations.Add(wrd, ann);
+                    ++added;
+                }
+                else
+                {
+                    ++skipped;
+                }
+            }
+            if (added > 0)
+            {
+                _context.SaveToDb();
+                DidChangesToAnnotationsInContext = true;
+            }
+
+            var msg = $"Added {added} new annotations to your open document.";
+            if (skipped > 0) msg += $" Skipped {skipped} annotations because an annotation for the same word already exists.";
+            MessageBox.Show(this, msg, "Take All Relevant Annotations", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

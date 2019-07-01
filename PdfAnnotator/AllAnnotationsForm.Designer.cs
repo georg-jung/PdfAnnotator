@@ -35,8 +35,9 @@
             this.documentHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.inCurrentPdfHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.annotationControlsPanel = new System.Windows.Forms.Panel();
-            this.takeAnnotationButton = new System.Windows.Forms.Button();
             this.copyAnnotationContentButton = new System.Windows.Forms.Button();
+            this.takeAnnotationButton = new System.Windows.Forms.Button();
+            this.takeAllRelevantAnnotationsButton = new System.Windows.Forms.Button();
             this.annotationsGroupBox.SuspendLayout();
             this.annotationControlsPanel.SuspendLayout();
             this.SuspendLayout();
@@ -94,6 +95,7 @@
             // 
             // annotationControlsPanel
             // 
+            this.annotationControlsPanel.Controls.Add(this.takeAllRelevantAnnotationsButton);
             this.annotationControlsPanel.Controls.Add(this.copyAnnotationContentButton);
             this.annotationControlsPanel.Controls.Add(this.takeAnnotationButton);
             this.annotationControlsPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -101,6 +103,16 @@
             this.annotationControlsPanel.Name = "annotationControlsPanel";
             this.annotationControlsPanel.Size = new System.Drawing.Size(788, 36);
             this.annotationControlsPanel.TabIndex = 3;
+            // 
+            // copyAnnotationContentButton
+            // 
+            this.copyAnnotationContentButton.Location = new System.Drawing.Point(221, 6);
+            this.copyAnnotationContentButton.Name = "copyAnnotationContentButton";
+            this.copyAnnotationContentButton.Size = new System.Drawing.Size(100, 23);
+            this.copyAnnotationContentButton.TabIndex = 1;
+            this.copyAnnotationContentButton.Text = "Copy Content";
+            this.copyAnnotationContentButton.UseVisualStyleBackColor = true;
+            this.copyAnnotationContentButton.Click += new System.EventHandler(this.CopyAnnotationContentButton_Click);
             // 
             // takeAnnotationButton
             // 
@@ -112,15 +124,15 @@
             this.takeAnnotationButton.UseVisualStyleBackColor = true;
             this.takeAnnotationButton.Click += new System.EventHandler(this.takeAnnotationButton_Click);
             // 
-            // copyAnnotationContentButton
+            // takeAllRelevantAnnotationsButton
             // 
-            this.copyAnnotationContentButton.Location = new System.Drawing.Point(115, 6);
-            this.copyAnnotationContentButton.Name = "copyAnnotationContentButton";
-            this.copyAnnotationContentButton.Size = new System.Drawing.Size(100, 23);
-            this.copyAnnotationContentButton.TabIndex = 1;
-            this.copyAnnotationContentButton.Text = "Copy Content";
-            this.copyAnnotationContentButton.UseVisualStyleBackColor = true;
-            this.copyAnnotationContentButton.Click += new System.EventHandler(this.CopyAnnotationContentButton_Click);
+            this.takeAllRelevantAnnotationsButton.Location = new System.Drawing.Point(115, 6);
+            this.takeAllRelevantAnnotationsButton.Name = "takeAllRelevantAnnotationsButton";
+            this.takeAllRelevantAnnotationsButton.Size = new System.Drawing.Size(100, 23);
+            this.takeAllRelevantAnnotationsButton.TabIndex = 2;
+            this.takeAllRelevantAnnotationsButton.Text = "Take All Relevant";
+            this.takeAllRelevantAnnotationsButton.UseVisualStyleBackColor = true;
+            this.takeAllRelevantAnnotationsButton.Click += new System.EventHandler(this.TakeAllRelevantAnnotationsButton_Click);
             // 
             // AllAnnotationsForm
             // 
@@ -151,5 +163,6 @@
         private System.Windows.Forms.Button takeAnnotationButton;
         private System.Windows.Forms.ColumnHeader inCurrentPdfHeader;
         private System.Windows.Forms.Button copyAnnotationContentButton;
+        private System.Windows.Forms.Button takeAllRelevantAnnotationsButton;
     }
 }
