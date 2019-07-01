@@ -362,8 +362,6 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
 
         private void ImportFromExistingDatabaseToolsMenuItem_Click(object sender, EventArgs e)
         {
-            if (Database.Exists())
-                MessageBox.Show(this, $"This functionality adds information from an existing database you may choose next. Please note that it only imports information on files that your local database has never seen before. If you want to overwrite annotations for documents you worked on before, delete the documents from your database first.", "Import Data from Existing Database", MessageBoxButtons.OK, MessageBoxIcon.Information);
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter = "PdfAnnotator databases (*.pdfannotatordb)|*.pdfannotatordb";
@@ -371,7 +369,18 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
                 {
                     ClearContextAndUi();
                     var stats = Annotations.ImportUnseenPdfs(ofd.FileName);
-                    MessageBox.Show(this, $"Success. Imported {stats.annotationCount} annotations for {stats.pdfCount} documents.", "Import Data from Existing Database", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    var msg = $"Success. Imported {stats.annotationCount} annotations for {stats.pdfCount} new documents, your database has never seen.";
+                    if (stats.mergeCandidatesCount == 0)
+                    {
+                        MessageBox.Show(this, msg, "Import Data from Existing Database", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    } else
+                    {
+                        msg = $"{msg} Furthermore there exist annotations for {stats.mergeCandidatesCount} documentes your database has annotations for too. Do you want to import these annotations too? If there are annotations for the same word in your database and the imported file, your annotation will be prefered.";
+                        if (MessageBox.Show(this, msg, "Import Data from Existing Database", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
+                        var mergeStats = Annotations.MergeSeenPdfs(ofd.FileName);
+                        msg = $"Success. Added {stats.annotationCount} annotations to {stats.pdfCount} documents during merge.";
+                        MessageBox.Show(this, msg, "Import Data from Existing Database", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                 }
             }
         }

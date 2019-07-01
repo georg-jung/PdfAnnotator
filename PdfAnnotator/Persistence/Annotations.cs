@@ -126,7 +126,31 @@ namespace PdfAnnotator.Persistence
             }
         }
 
-        public static (int pdfCount, int annotationCount) ImportUnseenPdfs(string sourcePath)
+        public static (int pdfCount, int annotationCount, int mergeCandidatesCount) ImportUnseenPdfs(string sourcePath)
+        {
+            int pdfCnt = 0;
+            int annotCnt = 0;
+            int mergeCandidatePdfCnt = 0;
+            using (var repo = Database.GetRepository())
+            using (var toImport = Database.GetReadOnlyRepository(sourcePath))
+            {
+                foreach (var pdf in toImport.GetPdfs())
+                {
+                    if (repo.GetPdf(pdf.Md5) != null)
+                    {
+                        ++mergeCandidatePdfCnt;
+                        continue;
+                    }
+                    var annots = toImport.GetAnnotations(pdf.Md5);
+                    repo.SaveAnnotations(pdf, annots, false);
+                    annotCnt += annots.Count;
+                    ++pdfCnt;
+                }
+            }
+            return (pdfCnt, annotCnt, mergeCandidatePdfCnt);
+        }
+
+        public static (int pdfCount, int annotationCount) MergeSeenPdfs(string sourcePath)
         {
             int pdfCnt = 0;
             int annotCnt = 0;
@@ -135,10 +159,15 @@ namespace PdfAnnotator.Persistence
             {
                 foreach (var pdf in toImport.GetPdfs())
                 {
-                    if (repo.GetPdf(pdf.Md5) != null) continue;
-                    var annots = toImport.GetAnnotations(pdf.Md5);
-                    repo.SaveAnnotations(pdf, annots, false);
-                    annotCnt += annots.Count;
+                    if (repo.GetPdf(pdf.Md5) == null) continue;
+                    var importAnnots = toImport.GetAnnotations(pdf.Md5);
+                    var existingAnnots = repo.GetAnnotations(pdf.Md5);
+                    // https://stackoverflow.com/questions/6331193/add-items-to-a-collection-if-the-collection-does-not-already-contain-it-by-compa
+                    // ToList just for count below
+                    var newOnes = importAnnots.Where(ia => !existingAnnots.Any(ea => ea.Word.Equals(ia.Word, StringComparison.InvariantCultureIgnoreCase))).ToList();
+                    existingAnnots.AddRange(newOnes);
+                    repo.SaveAnnotations(pdf, existingAnnots, false);
+                    annotCnt += newOnes.Count;
                     ++pdfCnt;
                 }
             }

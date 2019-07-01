@@ -33,6 +33,10 @@
             this.openLruPdfMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allAnnotationsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createPdfMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportDatabaseToolsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importFromExistingDatabaseToolsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.restoreDatabseToolsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wordsView = new System.Windows.Forms.ListView();
             this.wordHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.countHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -48,10 +52,7 @@
             this.autoSaveInfoLabel = new System.Windows.Forms.Label();
             this.deleteAnnotationButton = new System.Windows.Forms.Button();
             this.editAnnotationButton = new System.Windows.Forms.Button();
-            this.toolsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportDatabaseToolsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.importFromExistingDatabaseToolsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.restoreDatabseToolsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.documentsInDatabaseToolsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenu.SuspendLayout();
             this.candidatesGroupBox.SuspendLayout();
             this.candidateControlsHeader.SuspendLayout();
@@ -104,6 +105,38 @@
             this.createPdfMenuItem.Size = new System.Drawing.Size(86, 20);
             this.createPdfMenuItem.Text = "Create PDF...";
             this.createPdfMenuItem.Click += new System.EventHandler(this.createPdfMenuItem_Click);
+            // 
+            // toolsMenuItem
+            // 
+            this.toolsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exportDatabaseToolsMenuItem,
+            this.importFromExistingDatabaseToolsMenuItem,
+            this.restoreDatabseToolsMenuItem,
+            this.documentsInDatabaseToolsMenuItem});
+            this.toolsMenuItem.Name = "toolsMenuItem";
+            this.toolsMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.toolsMenuItem.Text = "Tools";
+            // 
+            // exportDatabaseToolsMenuItem
+            // 
+            this.exportDatabaseToolsMenuItem.Name = "exportDatabaseToolsMenuItem";
+            this.exportDatabaseToolsMenuItem.Size = new System.Drawing.Size(233, 22);
+            this.exportDatabaseToolsMenuItem.Text = "Export Database";
+            this.exportDatabaseToolsMenuItem.Click += new System.EventHandler(this.ExportDatabaseToolsMenuItem_Click);
+            // 
+            // importFromExistingDatabaseToolsMenuItem
+            // 
+            this.importFromExistingDatabaseToolsMenuItem.Name = "importFromExistingDatabaseToolsMenuItem";
+            this.importFromExistingDatabaseToolsMenuItem.Size = new System.Drawing.Size(233, 22);
+            this.importFromExistingDatabaseToolsMenuItem.Text = "Import from existing Database";
+            this.importFromExistingDatabaseToolsMenuItem.Click += new System.EventHandler(this.ImportFromExistingDatabaseToolsMenuItem_Click);
+            // 
+            // restoreDatabseToolsMenuItem
+            // 
+            this.restoreDatabseToolsMenuItem.Name = "restoreDatabseToolsMenuItem";
+            this.restoreDatabseToolsMenuItem.Size = new System.Drawing.Size(233, 22);
+            this.restoreDatabseToolsMenuItem.Text = "Restore Database";
+            this.restoreDatabseToolsMenuItem.Click += new System.EventHandler(this.RestoreDatabseToolsMenuItem_Click);
             // 
             // wordsView
             // 
@@ -268,36 +301,11 @@
             this.editAnnotationButton.UseVisualStyleBackColor = true;
             this.editAnnotationButton.Click += new System.EventHandler(this.editAnnotationButton_Click);
             // 
-            // toolsMenuItem
+            // documentsInDatabaseToolsMenuItem
             // 
-            this.toolsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exportDatabaseToolsMenuItem,
-            this.importFromExistingDatabaseToolsMenuItem,
-            this.restoreDatabseToolsMenuItem});
-            this.toolsMenuItem.Name = "toolsMenuItem";
-            this.toolsMenuItem.Size = new System.Drawing.Size(47, 20);
-            this.toolsMenuItem.Text = "Tools";
-            // 
-            // exportDatabaseToolsMenuItem
-            // 
-            this.exportDatabaseToolsMenuItem.Name = "exportDatabaseToolsMenuItem";
-            this.exportDatabaseToolsMenuItem.Size = new System.Drawing.Size(233, 22);
-            this.exportDatabaseToolsMenuItem.Text = "Export Database";
-            this.exportDatabaseToolsMenuItem.Click += new System.EventHandler(this.ExportDatabaseToolsMenuItem_Click);
-            // 
-            // importFromExistingDatabaseToolsMenuItem
-            // 
-            this.importFromExistingDatabaseToolsMenuItem.Name = "importFromExistingDatabaseToolsMenuItem";
-            this.importFromExistingDatabaseToolsMenuItem.Size = new System.Drawing.Size(233, 22);
-            this.importFromExistingDatabaseToolsMenuItem.Text = "Import from existing Database";
-            this.importFromExistingDatabaseToolsMenuItem.Click += new System.EventHandler(this.ImportFromExistingDatabaseToolsMenuItem_Click);
-            // 
-            // restoreDatabseToolsMenuItem
-            // 
-            this.restoreDatabseToolsMenuItem.Name = "restoreDatabseToolsMenuItem";
-            this.restoreDatabseToolsMenuItem.Size = new System.Drawing.Size(233, 22);
-            this.restoreDatabseToolsMenuItem.Text = "Restore Database";
-            this.restoreDatabseToolsMenuItem.Click += new System.EventHandler(this.RestoreDatabseToolsMenuItem_Click);
+            this.documentsInDatabaseToolsMenuItem.Name = "documentsInDatabaseToolsMenuItem";
+            this.documentsInDatabaseToolsMenuItem.Size = new System.Drawing.Size(233, 22);
+            this.documentsInDatabaseToolsMenuItem.Text = "Documents in Database...";
             // 
             // MainForm
             // 
@@ -355,6 +363,7 @@
         private System.Windows.Forms.ToolStripMenuItem exportDatabaseToolsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importFromExistingDatabaseToolsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem restoreDatabseToolsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem documentsInDatabaseToolsMenuItem;
     }
 }
 
