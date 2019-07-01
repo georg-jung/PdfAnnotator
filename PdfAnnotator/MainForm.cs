@@ -91,16 +91,15 @@ namespace PdfAnnotator
             var saved = Annotations.GetAnnotations(_ctx.OpenFile.Md5);
             if (saved == null)
             {
-                var found = Annotations.GetAnnotationsByPath(_ctx.OpenFile.Path);
-                if (found.Item1 == null || found.Item2 == null)
+                (var oldPdf, var annotations) = Annotations.GetAnnotationsByPath(_ctx.OpenFile.Path);
+                if (oldPdf == null || annotations == null)
                     return;
-                var oldPdf = found.Item1;
                 if (MessageBox.Show(
                         $@"There are no saved annotations for the file you opened, but for another file which existed at the same path. 
 Possibly you updated the file's contents. Do you want to load the saved annotations corresponding to the old file, which was last seen {oldPdf.LastSeen}?",
                         "File mismatch", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
                     return;
-                saved = found.Item2;
+                saved = annotations;
             }
 
             var added = 0;
