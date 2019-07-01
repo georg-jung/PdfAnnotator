@@ -99,6 +99,12 @@
     <Compile Include="AllAnnotationsForm.Designer.cs">
       <DependentUpon>AllAnnotationsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="AllDocumentsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AllDocumentsForm.Designer.cs">
+      <DependentUpon>AllDocumentsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Annotation\Annotation.cs" />
     <Compile Include="Annotation\TextSharpAnnotationWriter.cs" />
     <Compile Include="Annotation\IAnnotation.cs" />
@@ -155,6 +161,9 @@
     <Compile Include="Words\WordExtractor.cs" />
     <EmbeddedResource Include="AllAnnotationsForm.resx">
       <DependentUpon>AllAnnotationsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AllDocumentsForm.resx">
+      <DependentUpon>AllDocumentsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditAnnotationForm.resx">
       <DependentUpon>EditAnnotationForm.cs</DependentUpon>

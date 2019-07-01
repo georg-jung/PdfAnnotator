@@ -118,11 +118,13 @@ namespace PdfAnnotator.Persistence
             }
         }
 
-        public static List<PdfFile> GetLruPdfs(int maxCount = 10)
+        public static List<PdfFile> GetLruPdfs(int? maxCount = 10)
         {
             using (var repo = Database.GetRepository())
             {
-                return repo.Query<PdfFile>().Where(Query.All(nameof(PdfFile.LastSeen), Query.Descending)).Limit(maxCount).ToList();
+                var q = repo.Query<PdfFile>().Where(Query.All(nameof(PdfFile.LastSeen), Query.Descending));
+                if (maxCount.HasValue) q = q.Limit(maxCount.Value);
+                return q.ToList();
             }
         }
 

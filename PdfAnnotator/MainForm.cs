@@ -398,5 +398,14 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
                 }
             }
         }
+
+        private void DocumentsInDatabaseToolsMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var frm = new AllDocumentsForm(_ctx))
+            {
+                frm.ShowDialog();
+                if (frm.DidChangesToAnnotationsInContext) RefreshAnnotationsList();
+            }
+        }
     }
 }
