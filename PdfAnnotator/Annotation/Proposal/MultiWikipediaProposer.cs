@@ -25,10 +25,10 @@ namespace PdfAnnotator.Annotation.Proposal
             _ignoreExceptions = ignoreExceptions;
         }
 
-        public async Task<IReadOnlyList<IAnnotation>> ProposeAsync(IWord word)
+        public async Task<IReadOnlyList<IProposal>> ProposeAsync(IWord word)
         {
             var tasks = _proposers.Select(p => p.ProposeAsync(word));
-            var proposals = new List<IAnnotation>();
+            var proposals = new List<IProposal>();
             try
             {
                 var results = await Task.WhenAll(tasks);

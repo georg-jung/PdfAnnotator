@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PdfAnnotator.Words;
 
 namespace PdfAnnotator.Annotation.Proposal
 {
-    internal interface IProposer
+    internal class Proposal : IProposal
     {
-        Task<IReadOnlyList<IProposal>> ProposeAsync(IWord word);
+        public IAnnotation Annotation { get; set; }
+        public string Description { get; set; }
     }
 }

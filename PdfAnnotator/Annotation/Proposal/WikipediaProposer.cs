@@ -29,12 +29,12 @@ namespace PdfAnnotator.Annotation.Proposal
                 return await wc.DownloadStringTaskAsync(_apiUrlBase + WebUtility.UrlEncode(pageTitle)).ConfigureAwait(false);
         }
 
-        public async Task<IReadOnlyList<IAnnotation>> ProposeAsync(IWord word)
+        public async Task<IReadOnlyList<IProposal>> ProposeAsync(IWord word)
         {
             var query = word.Text;
             var json = await GetJsonAsync(query).ConfigureAwait(false);
             var res = JsonConvert.DeserializeObject<WikiApiResult>(json);
-            var proposals = new List<IAnnotation>();
+            var proposals = new List<IProposal>();
             
             foreach (var pgEntry in res.query.pages)
             {
@@ -42,9 +42,12 @@ namespace PdfAnnotator.Annotation.Proposal
                 var pg = pgEntry.Value;
                 if (!string.IsNullOrWhiteSpace(pg.extract))
                 {
+                    var prop = new Proposal();
                     var ann = new Annotation(word);
-                    ann.Content = pg.extract;
-                    proposals.Add(ann);
+                    ann.Content = pg.extract.Replace("\n", "\r\n"); ;
+                    prop.Annotation = ann;
+                    prop.Description = $"wiki:{LanguageCode} {pg.title}";
+                    proposals.Add(prop);
                 }
             }
 

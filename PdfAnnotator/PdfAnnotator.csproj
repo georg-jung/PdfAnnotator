@@ -109,8 +109,11 @@
       <DependentUpon>AllDocumentsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Annotation\Annotation.cs" />
+    <Compile Include="Annotation\Proposal\ExistingAnnotationProposer.cs" />
+    <Compile Include="Annotation\Proposal\IProposal.cs" />
     <Compile Include="Annotation\Proposal\IProposer.cs" />
     <Compile Include="Annotation\Proposal\MultiWikipediaProposer.cs" />
+    <Compile Include="Annotation\Proposal\Proposal.cs" />
     <Compile Include="Annotation\Proposal\WikipediaProposer.cs" />
     <Compile Include="Annotation\TextSharpAnnotationWriter.cs" />
     <Compile Include="Annotation\IAnnotation.cs" />

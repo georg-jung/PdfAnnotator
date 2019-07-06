@@ -68,6 +68,11 @@ namespace PdfAnnotator.Persistence
             }
         }
 
+        public static List<WordAnnotation> GetAnnotationsByWord(string word)
+        {
+            return GetAnnotationsByWords(word.Yield()).First().Item2;
+        }
+
         public static IEnumerable<(string, List<WordAnnotation>)> GetAnnotationsByWords(IEnumerable<string> words)
         {
             using (var repo = Database.GetRepository())
