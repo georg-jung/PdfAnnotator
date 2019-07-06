@@ -19,8 +19,8 @@ namespace PdfAnnotator.Words
         {
         }
 
-        private static readonly Regex ValidChain = new Regex("^§?§(\\s|Nummer|Absatz|bis|und|\\p{N}|\\.|\\,)*$");
-        public static readonly Regex ValidParagraphExpression = new Regex("^§?§(\\s*(Nummer|Absatz|bis|und|\\p{N}|\\.|\\,))*(\\p{N}|\\.|\\,)+$");
+        private static readonly Regex ValidChain = new Regex(@"^§?§(\s|Nummer|Nr\.|Absatz|Abs\.|bis|und|\p{N}|\.|\,)*$");
+        public static readonly Regex ValidParagraphExpression = new Regex(@"^§?§(\s*(Nummer|Nr\.|Absatz|Abs\.|bis|und|\p{N}|\.|\,))*\s*(\p{N}|\.|\,)+$");
 
         public IEnumerable<Pdf.IWord> Aggregate(IEnumerable<Pdf.IWord> words)
         {
