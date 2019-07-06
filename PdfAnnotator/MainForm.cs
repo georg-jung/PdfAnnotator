@@ -55,8 +55,19 @@ namespace PdfAnnotator
                     });
 
                     var analyzer = new Analyzer();
-                    var analysis = await analyzer.AnalyzeAsync(_ctx.OpenFile.Path, analyzePageProgress).ConfigureAwait(true);
-                    await md5Task.ConfigureAwait(true);
+                    IAnalysis analysis;
+                    try
+                    {
+                        analysis = await analyzer.AnalyzeAsync(_ctx.OpenFile.Path, analyzePageProgress).ConfigureAwait(true);
+                        await md5Task.ConfigureAwait(true);
+                    }
+                    catch (Exception ex)
+                    {
+                        var msg = $"An error occured while opening the selected file: {ex.Message}";
+                        MessageBox.Show(this, msg, "Could not open file", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        ClearContextAndUi();
+                        return;
+                    }
 
                     prgForm.Report("Document loaded. Analyzing words...");
                     var we = new WordExtractor();
@@ -305,7 +316,7 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
 
         private void LoadLruList()
         {
-            var pdfs = Annotations.GetLruPdfs();
+            var pdfs = Annotations.GetLruPdfs().OrderByDescending(pdf => pdf.LastSeen).ToList();
             openLruPdfMenuItem.DropDownItems.Clear();
             foreach (var pdf in pdfs)
             {
@@ -372,7 +383,8 @@ Possibly you updated the file's contents. Do you want to load the saved annotati
                     if (stats.mergeCandidatesCount == 0)
                     {
                         MessageBox.Show(this, msg, "Import Data from Existing Database", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    } else
+                    }
+                    else
                     {
                         msg = $"{msg} Furthermore there exist annotations for {stats.mergeCandidatesCount} documentes your database has annotations for too. Do you want to import these annotations too? If there are annotations for the same word in your database and the imported file, your annotation will be prefered.";
                         if (MessageBox.Show(this, msg, "Import Data from Existing Database", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
