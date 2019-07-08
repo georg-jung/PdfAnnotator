@@ -107,7 +107,7 @@ namespace PdfAnnotator
                     return;
                 if (MessageBox.Show(
                         $@"There are no saved annotations for the file you opened, but for another file which existed at the same path. 
-Possibly you updated the file's contents. Do you want to load the saved annotations corresponding to the old file, which was last seen {oldPdf.LastSeen}?",
+Possibly you updated the file's contents. Do you want to load the saved annotations corresponding to the old file, which was last modified {oldPdf.LastSeen}?",
                         "File mismatch", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
                     return;
                 saved = annotations;
